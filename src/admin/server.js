@@ -24,7 +24,6 @@ const storage = new CloudinaryStorage({
   params: {
     folder: 'renthouse',
     allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
-    transformation: [{ width: 1200, height: 900, crop: 'limit', quality: 'auto' }],
   },
 });
 const upload = multer({
