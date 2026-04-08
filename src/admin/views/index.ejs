@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản lý Phòng Trọ</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; background: #f5f5f5; color: #333; }
+
+    header { background: #2c7a4b; color: white; padding: 16px 24px; }
+    header h1 { font-size: 20px; }
+
+    .container { max-width: 1200px; margin: 24px auto; padding: 0 16px; }
+
+    .card { background: white; border-radius: 8px; padding: 24px; margin-bottom: 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+    .card h2 { font-size: 16px; margin-bottom: 16px; color: #2c7a4b; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .form-group { display: flex; flex-direction: column; gap: 4px; }
+    .form-group.full { grid-column: 1 / -1; }
+    label { font-size: 13px; color: #555; font-weight: 500; }
+    input, select, textarea {
+      padding: 8px 10px; border: 1px solid #ddd; border-radius: 4px;
+      font-size: 14px; outline: none;
+    }
+    input:focus, select:focus, textarea:focus { border-color: #2c7a4b; }
+    textarea { resize: vertical; min-height: 70px; }
+
+    /* Price input wrapper */
+    .price-wrapper { position: relative; }
+    .price-wrapper input { padding-right: 50px; }
+    .price-wrapper span {
+      position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+      color: #888; font-size: 13px; pointer-events: none;
+    }
+    .price-preview { font-size: 13px; color: #2c7a4b; margin-top: 4px; font-weight: bold; min-height: 18px; }
+
+    /* Image upload */
+    .upload-area {
+      border: 2px dashed #ddd; border-radius: 6px; padding: 20px;
+      text-align: center; cursor: pointer; transition: border-color 0.2s;
+    }
+    .upload-area:hover, .upload-area.dragover { border-color: #2c7a4b; background: #f0faf5; }
+    .upload-area input[type=file] { display: none; }
+    .upload-area p { color: #888; font-size: 14px; margin-top: 6px; }
+    .upload-area .icon { font-size: 32px; }
+
+    .preview-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .preview-img { position: relative; width: 90px; height: 90px; }
+    .preview-img img { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; }
+    .preview-img .remove-img {
+      position: absolute; top: -6px; right: -6px; background: #e74c3c;
+      color: white; border: none; border-radius: 50%; width: 20px; height: 20px;
+      cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center;
+    }
+
+    .btn { padding: 9px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 500; }
+    .btn-primary { background: #2c7a4b; color: white; }
+    .btn-primary:hover { background: #235e3a; }
+    .btn-danger { background: #e74c3c; color: white; font-size: 12px; padding: 5px 10px; }
+    .btn-danger:hover { background: #c0392b; }
+    .btn-warning { background: #f39c12; color: white; font-size: 12px; padding: 5px 10px; }
+    .btn-warning:hover { background: #d68910; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th { background: #f0f0f0; text-align: left; padding: 10px 12px; white-space: nowrap; }
+    td { padding: 10px 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
+    tr:hover td { background: #fafafa; }
+
+    .room-images { display: flex; gap: 4px; }
+    .room-images img { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; }
+    .room-images .more { width: 50px; height: 50px; background: #eee; border-radius: 4px;
+      display: flex; align-items: center; justify-content: center; font-size: 12px; color: #666; }
+
+    .badge { padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+    .badge-green { background: #d4edda; color: #155724; }
+    .badge-red { background: #f8d7da; color: #721c24; }
+
+    .alert { padding: 10px 16px; border-radius: 4px; margin-bottom: 16px; font-size: 14px; }
+    .alert-success { background: #d4edda; color: #155724; }
+    .alert-error { background: #f8d7da; color: #721c24; }
+
+    .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+    .price-cell { white-space: nowrap; font-weight: 500; color: #2c7a4b; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🏠 Quản lý Phòng Trọ</h1>
+  </header>
+
+  <div class="container">
+    <% if (message) { %>
+      <div class="alert alert-<%= message.type %>"><%= message.text %></div>
+    <% } %>
+
+    <!-- Form thêm phòng -->
+    <div class="card">
+      <h2>➕ Thêm phòng mới</h2>
+      <form action="/admin/rooms" method="POST" enctype="multipart/form-data">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Số phòng *</label>
+            <input type="text" name="roomNumber" placeholder="VD: 04" required>
+          </div>
+          <div class="form-group">
+            <label>Giá thuê *</label>
+            <div class="price-wrapper">
+              <input type="number" name="price" id="priceInput" placeholder="VD: 3000000" required min="0">
+              <span>đ</span>
+            </div>
+            <div class="price-preview" id="pricePreview"></div>
+          </div>
+          <div class="form-group">
+            <label>Địa chỉ *</label>
+            <input type="text" name="address" placeholder="VD: 123 Nguyễn Trãi" required>
+          </div>
+          <div class="form-group">
+            <label>Quận / Khu vực *</label>
+            <input type="text" name="district" placeholder="VD: Quận 1, TP.HCM" required>
+          </div>
+          <div class="form-group">
+            <label>Diện tích (m²)</label>
+            <input type="number" name="area" placeholder="VD: 25" min="0">
+          </div>
+          <div class="form-group">
+            <label>Nội thất</label>
+            <select name="furniture">
+              <option value="none">Không nội thất</option>
+              <option value="basic" selected>Nội thất cơ bản</option>
+              <option value="full">Đầy đủ nội thất</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Trạng thái</label>
+            <select name="status">
+              <option value="available">Còn trống</option>
+              <option value="rented">Đã có người thuê</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Số điện thoại liên hệ</label>
+            <input type="text" name="contact" placeholder="VD: 0901 234 567">
+          </div>
+          <div class="form-group full">
+            <label>Mô tả</label>
+            <textarea name="description" placeholder="Mô tả thêm về phòng..."></textarea>
+          </div>
+          <div class="form-group full">
+            <label>Ảnh phòng (tối đa 5 ảnh, mỗi ảnh ≤ 5MB)</label>
+            <div class="upload-area" id="uploadArea" onclick="document.getElementById('imageInput').click()">
+              <div class="icon">📷</div>
+              <p>Click hoặc kéo thả ảnh vào đây</p>
+              <input type="file" id="imageInput" name="images" multiple accept="image/*">
+            </div>
+            <div class="preview-grid" id="previewGrid"></div>
+          </div>
+        </div>
+        <br>
+        <button type="submit" class="btn btn-primary">➕ Thêm phòng</button>
+      </form>
+    </div>
+
+    <!-- Danh sách phòng -->
+    <div class="card">
+      <h2>📋 Danh sách phòng trọ (<%= rooms.length %> phòng)</h2>
+      <% if (rooms.length === 0) { %>
+        <p style="color:#999; text-align:center; padding:20px">Chưa có phòng nào.</p>
+      <% } else { %>
+      <div style="overflow-x:auto">
+      <table>
+        <thead>
+          <tr>
+            <th>Phòng</th>
+            <th>Ảnh</th>
+            <th>Giá/tháng</th>
+            <th>Địa chỉ</th>
+            <th>Diện tích</th>
+            <th>Nội thất</th>
+            <th>Trạng thái</th>
+            <th>Liên hệ</th>
+            <th>Thao tác</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% rooms.forEach(room => { %>
+          <tr>
+            <td><strong><%= room.roomNumber %></strong></td>
+            <td>
+              <div class="room-images">
+                <% if (room.images && room.images.length > 0) { %>
+                  <img src="<%= room.images[0] %>" alt="Phòng <%= room.roomNumber %>"
+                    class="thumb" style="cursor:pointer"
+                    onclick="openGallery(<%- JSON.stringify(room.images) %>, 0, 'Phòng <%= room.roomNumber %>')">
+                  <% if (room.images.length > 1) { %>
+                    <div class="more" style="cursor:pointer"
+                      onclick="openGallery(<%- JSON.stringify(room.images) %>, 1, 'Phòng <%= room.roomNumber %>')">
+                      +<%= room.images.length - 1 %>
+                    </div>
+                  <% } %>
+                <% } else { %>
+                  <span style="color:#ccc;font-size:24px">🏠</span>
+                <% } %>
+              </div>
+            </td>
+            <td class="price-cell">
+              <%= new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(room.price) %>
+            </td>
+            <td><%= room.address %>, <%= room.district %></td>
+            <td><%= room.area %>m²</td>
+            <td><%= room.furniture === 'none' ? 'Không' : room.furniture === 'basic' ? 'Cơ bản' : 'Đầy đủ' %></td>
+            <td>
+              <span class="badge <%= room.status === 'available' ? 'badge-green' : 'badge-red' %>">
+                <%= room.status === 'available' ? '✅ Còn trống' : '❌ Đã thuê' %>
+              </span>
+            </td>
+            <td><%= room.contact %></td>
+            <td>
+              <div class="actions">
+                <form action="/admin/rooms/<%= room._id %>/toggle" method="POST">
+                  <button class="btn btn-warning">
+                    <%= room.status === 'available' ? '🔒 Đã thuê' : '✅ Còn trống' %>
+                  </button>
+                </form>
+                <form action="/admin/rooms/<%= room._id %>/delete" method="POST"
+                  onsubmit="return confirm('Xóa phòng <%= room.roomNumber %>?')">
+                  <button class="btn btn-danger">🗑 Xóa</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+      </div>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- Modal xem ảnh -->
+  <div id="gallery-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:1000; align-items:center; justify-content:center; flex-direction:column;">
+    <div style="position:relative; max-width:90vw; max-height:85vh; display:flex; flex-direction:column; align-items:center; gap:12px;">
+      <!-- Header -->
+      <div style="display:flex; justify-content:space-between; align-items:center; width:100%; color:white;">
+        <span id="gallery-title" style="font-size:16px; font-weight:bold;"></span>
+        <span id="gallery-counter" style="font-size:14px; color:#ccc;"></span>
+      </div>
+      <!-- Ảnh chính -->
+      <div style="position:relative; display:flex; align-items:center; gap:16px;">
+        <button onclick="prevImg()" id="btn-prev"
+          style="background:rgba(255,255,255,0.2); border:none; color:white; font-size:28px; width:44px; height:44px; border-radius:50%; cursor:pointer;">‹</button>
+        <img id="gallery-img" src="" alt=""
+          style="max-width:75vw; max-height:70vh; object-fit:contain; border-radius:8px; box-shadow:0 4px 20px rgba(0,0,0,0.5);">
+        <button onclick="nextImg()" id="btn-next"
+          style="background:rgba(255,255,255,0.2); border:none; color:white; font-size:28px; width:44px; height:44px; border-radius:50%; cursor:pointer;">›</button>
+      </div>
+      <!-- Thumbnail strip -->
+      <div id="gallery-thumbs" style="display:flex; gap:6px; overflow-x:auto; max-width:90vw; padding:4px;"></div>
+    </div>
+    <!-- Nút đóng -->
+    <button onclick="closeGallery()"
+      style="position:fixed; top:16px; right:20px; background:none; border:none; color:white; font-size:32px; cursor:pointer;">✕</button>
+  </div>
+
+  <script>
+    // Format giá VND real-time
+    const priceInput = document.getElementById('priceInput');
+    const pricePreview = document.getElementById('pricePreview');
+
+    priceInput.addEventListener('input', () => {
+      const val = parseInt(priceInput.value);
+      if (val > 0) {
+        pricePreview.textContent = new Intl.NumberFormat('vi-VN', {
+          style: 'currency', currency: 'VND'
+        }).format(val);
+      } else {
+        pricePreview.textContent = '';
+      }
+    });
+
+    // Preview ảnh trước khi upload
+    const imageInput = document.getElementById('imageInput');
+    const previewGrid = document.getElementById('previewGrid');
+    const uploadArea = document.getElementById('uploadArea');
+    let selectedFiles = [];
+
+    imageInput.addEventListener('change', handleFiles);
+
+    function handleFiles(e) {
+      const files = Array.from(e.target.files);
+      selectedFiles = files.slice(0, 5);
+      renderPreviews();
+    }
+
+    function renderPreviews() {
+      previewGrid.innerHTML = '';
+      selectedFiles.forEach((file, i) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const div = document.createElement('div');
+          div.className = 'preview-img';
+          div.innerHTML = `
+            <img src="${e.target.result}" alt="">
+            <button type="button" class="remove-img" onclick="removeImg(${i})">✕</button>
+          `;
+          previewGrid.appendChild(div);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function removeImg(index) {
+      selectedFiles.splice(index, 1);
+      // Tạo DataTransfer mới để cập nhật input
+      const dt = new DataTransfer();
+      selectedFiles.forEach(f => dt.items.add(f));
+      imageInput.files = dt.files;
+      renderPreviews();
+    }
+
+    // Drag & drop
+    uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.classList.add('dragover'); });
+    uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.classList.remove('dragover');
+      const dt = new DataTransfer();
+      Array.from(e.dataTransfer.files).slice(0, 5).forEach(f => dt.items.add(f));
+      imageInput.files = dt.files;
+      selectedFiles = Array.from(dt.files);
+      renderPreviews();
+    });
+
+    // ── Gallery / Lightbox ──
+    let galleryImages = [], galleryIndex = 0;
+
+    function openGallery(images, index, title) {
+      galleryImages = images;
+      galleryIndex = index;
+      document.getElementById('gallery-title').textContent = title;
+      document.getElementById('gallery-modal').style.display = 'flex';
+      renderGallery();
+      document.addEventListener('keydown', galleryKeyHandler);
+    }
+
+    function closeGallery() {
+      document.getElementById('gallery-modal').style.display = 'none';
+      document.removeEventListener('keydown', galleryKeyHandler);
+    }
+
+    function renderGallery() {
+      document.getElementById('gallery-img').src = galleryImages[galleryIndex];
+      document.getElementById('gallery-counter').textContent = `${galleryIndex + 1} / ${galleryImages.length}`;
+      document.getElementById('btn-prev').style.visibility = galleryImages.length > 1 ? 'visible' : 'hidden';
+      document.getElementById('btn-next').style.visibility = galleryImages.length > 1 ? 'visible' : 'hidden';
+
+      const thumbs = document.getElementById('gallery-thumbs');
+      thumbs.innerHTML = galleryImages.map((src, i) => `
+        <img src="${src}" onclick="jumpTo(${i})"
+          style="width:60px; height:60px; object-fit:cover; border-radius:4px; cursor:pointer;
+            border: 2px solid ${i === galleryIndex ? '#2c7a4b' : 'transparent'}; opacity:${i === galleryIndex ? 1 : 0.6};">
+      `).join('');
+    }
+
+    function prevImg() { galleryIndex = (galleryIndex - 1 + galleryImages.length) % galleryImages.length; renderGallery(); }
+    function nextImg() { galleryIndex = (galleryIndex + 1) % galleryImages.length; renderGallery(); }
+    function jumpTo(i) { galleryIndex = i; renderGallery(); }
+
+    function galleryKeyHandler(e) {
+      if (e.key === 'ArrowLeft') prevImg();
+      else if (e.key === 'ArrowRight') nextImg();
+      else if (e.key === 'Escape') closeGallery();
+    }
+
+    // Click ngoài ảnh để đóng
+    document.getElementById('gallery-modal').addEventListener('click', function(e) {
+      if (e.target === this) closeGallery();
+    });
+  </script>
+</body>
+</html>
