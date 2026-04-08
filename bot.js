@@ -5,7 +5,7 @@ const Anthropic = require('@anthropic-ai/sdk');
 const Room = require('./src/models/Room');
 const adminApp = require('./src/admin/server');
 
-const ADMIN_PORT = process.env.ADMIN_PORT || 3000;
+const ADMIN_PORT = process.env.PORT || process.env.ADMIN_PORT || 3000;
 const Conversation = require('./src/models/Conversation');
 
 const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true });
