@@ -6,7 +6,7 @@ const claude = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 async function buildSystemPrompt() {
   const roomList = await getRoomsSummary();
-  return `Bạn là trợ lý tư vấn thuê nhà tên "Bot Thuê Nhà". Hỗ trợ khách tìm phòng trọ, tư vấn hợp đồng, giải đáp thắc mắc về thuê nhà.
+  return `Bạn là trợ lý tư vấn thuê nhà tên "Nhà trọ quận 3". Hỗ trợ khách tìm phòng trọ, tư vấn hợp đồng, giải đáp thắc mắc về thuê nhà.
 
 Danh sách phòng trọ hiện có:
 ${roomList}

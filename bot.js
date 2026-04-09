@@ -49,7 +49,7 @@ async function askClaude(userId, firstName, username, userMessage) {
     ? rooms.map(r => `- Phòng ${r.roomNumber}: ${r.price.toLocaleString('vi-VN')}đ/tháng | ${r.address}, ${r.district} | ${r.area}m² | ${furnitureLabel[r.furniture]} | ${statusLabel[r.status]}`).join('\n')
     : 'Chưa có dữ liệu phòng trọ.';
 
-  const systemPrompt = `Bạn là trợ lý tư vấn thuê nhà tên "Bot Thuê Nhà". Hỗ trợ khách tìm phòng trọ, tư vấn hợp đồng, giải đáp thắc mắc.\n\nDanh sách phòng:\n${roomList}\n\nLiên hệ: 0901 234 567 (8:00-20:00)\n\nTrả lời ngắn gọn, thân thiện bằng tiếng Việt.`;
+  const systemPrompt = `Bạn là trợ lý tư vấn thuê nhà tên "Nhà trọ quận 3". Hỗ trợ khách tìm phòng trọ, tư vấn hợp đồng, giải đáp thắc mắc.\n\nDanh sách phòng:\n${roomList}\n\nLiên hệ: 0901 234 567 (8:00-20:00)\n\nTrả lời ngắn gọn, thân thiện bằng tiếng Việt.`;
 
   const response = await claude.messages.create({
     model: 'claude-sonnet-4-6',
@@ -91,7 +91,7 @@ console.log('Đang kết nối MongoDB...');
 bot.onText(/\/start/, (msg) => {
   const name = msg.from.first_name || 'bạn';
   sendWithMenu(msg.chat.id,
-    `Xin chào *${name}*! 👋 Tôi là Bot Thuê Nhà.\n\nChọn một trong các mục bên dưới hoặc nhắn tin để hỏi tôi!`
+    `Xin chào *${name}*! 👋 Tôi là Nhà trọ quận 3.\n\nChọn một trong các mục bên dưới hoặc nhắn tin để hỏi tôi!`
   );
 });
 

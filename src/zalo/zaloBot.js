@@ -64,7 +64,7 @@ async function handleZaloMessage(event) {
   if (!userId) return;
 
   if (action === '/start' || action === 'Bắt đầu' || action === 'start') {
-    return sendWithMenu(userId, 'Xin chào! 👋 Tôi là Bot Thuê Nhà.');
+    return sendWithMenu(userId, 'Xin chào! 👋 Tôi là Nhà trọ quận 3.');
   }
 
   if (action === 'menu_danhsach' || action === '1') {
