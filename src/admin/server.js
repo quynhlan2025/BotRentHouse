@@ -54,6 +54,9 @@ app.get('/', (req, res) => res.render('landing'));
 // Spa landing page
 app.get('/spa', (req, res) => res.render('spa-landing'));
 
+// Bots comparison landing page
+app.get('/bots', (req, res) => res.render('bots-landing'));
+
 // ── SPA ADMIN ─────────────────────────────────────────────────────────────────
 
 // Tạo các khung giờ trong ngày (09:30 – 22:00, bước 30 phút)
