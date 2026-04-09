@@ -47,6 +47,9 @@ app.post('/zalo/webhook', async (req, res) => {
   }
 });
 
+// Landing page
+app.get('/', (req, res) => res.render('landing'));
+
 // Trang chi tiết phòng (public)
 app.get('/rooms/:id', async (req, res) => {
   try {
