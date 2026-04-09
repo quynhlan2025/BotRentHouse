@@ -4,6 +4,7 @@ const multer = require('multer');
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const Room = require('../models/Room');
+const Booking = require('../models/Booking');
 const { handleZaloMessage } = require('../zalo/zaloBot');
 
 const app = express();
@@ -52,6 +53,79 @@ app.get('/', (req, res) => res.render('landing'));
 
 // Spa landing page
 app.get('/spa', (req, res) => res.render('spa-landing'));
+
+// ── SPA ADMIN ─────────────────────────────────────────────────────────────────
+
+// Tạo các khung giờ trong ngày (09:30 – 22:00, bước 30 phút)
+function buildSlots(bookingsToday) {
+  const slots = [];
+  const bookedTimes = bookingsToday
+    .filter(b => b.status !== 'cancelled')
+    .map(b => b.time);
+  let h = 9, m = 30;
+  while (h < 22 || (h === 22 && m === 0)) {
+    const time = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+    slots.push({ time, booked: bookedTimes.includes(time) });
+    m += 30;
+    if (m >= 60) { m = 0; h++; }
+  }
+  return slots;
+}
+
+app.get('/spa-admin', async (req, res) => {
+  const { date: filterDate = '', status: filterStatus = '' } = req.query;
+  const query = {};
+  if (filterDate)   query.date   = filterDate;
+  if (filterStatus) query.status = filterStatus;
+
+  const [bookings, total, pending, confirmed, done] = await Promise.all([
+    Booking.find(query).sort({ date: 1, time: 1 }),
+    Booking.countDocuments(),
+    Booking.countDocuments({ status: 'pending' }),
+    Booking.countDocuments({ status: 'confirmed' }),
+    Booking.countDocuments({ status: 'done' }),
+  ]);
+
+  const todayStr = new Date().toISOString().split('T')[0];
+  const bookingsToday = await Booking.find({ date: todayStr });
+  const slots = buildSlots(bookingsToday);
+
+  const message = req.query.msg
+    ? { type: req.query.type || 'success', text: req.query.msg }
+    : null;
+
+  res.render('spa-admin', {
+    bookings, stats: { total, pending, confirmed, done },
+    slots, todayStr, filterDate, filterStatus, message,
+  });
+});
+
+app.post('/spa-admin/bookings', async (req, res) => {
+  try {
+    const { customerName, phone, service, date, time, note } = req.body;
+    // Validate giờ mở cửa
+    const [h, m] = time.split(':').map(Number);
+    const minutes = h * 60 + m;
+    if (minutes < 9 * 60 + 30 || minutes > 22 * 60) {
+      return res.redirect('/spa-admin?msg=Giờ hẹn ngoài giờ mở cửa (09:30–22:00)&type=error');
+    }
+    await Booking.create({ customerName, phone, service, date, time, note, source: 'admin' });
+    res.redirect('/spa-admin?msg=Đặt lịch thành công!&type=success');
+  } catch (err) {
+    res.redirect(`/spa-admin?msg=${encodeURIComponent('Lỗi: ' + err.message)}&type=error`);
+  }
+});
+
+app.post('/spa-admin/bookings/:id/status', async (req, res) => {
+  await Booking.findByIdAndUpdate(req.params.id, { status: req.body.status });
+  const label = { confirmed: 'Đã xác nhận', done: 'Hoàn thành', cancelled: 'Đã hủy' }[req.body.status];
+  res.redirect(`/spa-admin?msg=${encodeURIComponent(label + '!')}&type=success`);
+});
+
+app.post('/spa-admin/bookings/:id/delete', async (req, res) => {
+  await Booking.findByIdAndDelete(req.params.id);
+  res.redirect('/spa-admin?msg=Đã xóa lịch hẹn!&type=success');
+});
 
 // Trang chi tiết phòng (public)
 app.get('/rooms/:id', async (req, res) => {

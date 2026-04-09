@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spa Joliecao Beauty – Quản lý lịch hẹn</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --primary: #8b7355;
+      --accent:  #c9a96e;
+      --bg:      #faf9f7;
+      --card:    #ffffff;
+      --text:    #2d2d2d;
+      --muted:   #888;
+      --border:  #ede8e0;
+      --pending:   #f59e0b;
+      --confirmed: #10b981;
+      --done:      #6366f1;
+      --cancelled: #ef4444;
+    }
+    body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* NAV */
+    nav {
+      background: var(--primary);
+      color: white;
+      padding: 0 24px;
+      height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,.15);
+    }
+    nav .logo { font-size: 17px; font-weight: 700; letter-spacing: .3px; }
+    nav .logo span { color: var(--accent); }
+    nav .nav-links { display: flex; gap: 16px; }
+    nav .nav-links a { color: rgba(255,255,255,.8); text-decoration: none; font-size: 13px; transition: color .2s; }
+    nav .nav-links a:hover, nav .nav-links a.active { color: white; }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 28px 20px 60px; }
+
+    /* HEADER */
+    .page-header { margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    .page-header h1 { font-size: 22px; font-weight: 700; color: var(--primary); }
+    .page-header p  { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+    /* STATS ROW */
+    .stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 28px; }
+    .stat-card { background: var(--card); border-radius: 12px; padding: 18px 20px; border: 1px solid var(--border); }
+    .stat-card .val { font-size: 28px; font-weight: 800; color: var(--primary); }
+    .stat-card .lbl { font-size: 12px; color: var(--muted); margin-top: 4px; }
+    .stat-card.s-pending   .val { color: var(--pending); }
+    .stat-card.s-confirmed .val { color: var(--confirmed); }
+    .stat-card.s-done      .val { color: var(--done); }
+    .stat-card.s-cancelled .val { color: var(--cancelled); }
+
+    /* FLASH */
+    .flash { border-radius: 10px; padding: 12px 18px; margin-bottom: 20px; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+    .flash.success { background: #d1fae5; color: #065f46; }
+    .flash.error   { background: #fee2e2; color: #991b1b; }
+
+    /* TOOLBAR */
+    .toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; align-items: center; }
+    .toolbar input[type="date"], .toolbar select {
+      padding: 9px 13px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px;
+      background: white; color: var(--text); cursor: pointer;
+    }
+    .toolbar input[type="date"]:focus, .toolbar select:focus { outline: none; border-color: var(--accent); }
+    .toolbar .spacer { flex: 1; }
+    .btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; text-decoration: none; transition: opacity .15s; }
+    .btn:hover { opacity: .85; }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-accent  { background: var(--accent);  color: white; }
+    .btn-outline { background: white; color: var(--primary); border: 1px solid var(--border); }
+
+    /* ADD BOOKING FORM */
+    .add-form { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 24px; margin-bottom: 28px; display: none; }
+    .add-form.open { display: block; }
+    .add-form h3 { font-size: 16px; font-weight: 700; color: var(--primary); margin-bottom: 18px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group.full { grid-column: 1/-1; }
+    label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; }
+    input[type="text"], input[type="tel"], input[type="date"], input[type="time"], select, textarea {
+      padding: 10px 13px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px;
+      font-family: inherit; color: var(--text); background: white; width: 100%;
+    }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(201,169,110,.15); }
+    textarea { resize: vertical; min-height: 72px; }
+    .form-actions { margin-top: 18px; display: flex; gap: 10px; }
+
+    /* TABLE */
+    .table-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+    thead { background: #f5f1eb; }
+    thead th { padding: 13px 16px; text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); white-space: nowrap; }
+    tbody tr { border-top: 1px solid var(--border); transition: background .1s; }
+    tbody tr:hover { background: #fdf8f2; }
+    td { padding: 13px 16px; vertical-align: middle; }
+    td.nowrap { white-space: nowrap; }
+
+    .badge {
+      display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing: .3px;
+    }
+    .badge-pending   { background: #fef3c7; color: #92400e; }
+    .badge-confirmed { background: #d1fae5; color: #065f46; }
+    .badge-done      { background: #ede9fe; color: #4c1d95; }
+    .badge-cancelled { background: #fee2e2; color: #991b1b; }
+    .badge-admin     { background: #e5e7eb; color: #374151; }
+    .badge-zalo      { background: #dbeafe; color: #1e40af; }
+    .badge-telegram  { background: #ede9fe; color: #5b21b6; }
+
+    .action-btns { display: flex; gap: 5px; flex-wrap: wrap; }
+    .action-btn { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; border: none; cursor: pointer; transition: opacity .15s; }
+    .action-btn:hover { opacity: .8; }
+    .btn-confirm  { background: var(--confirmed); color: white; }
+    .btn-done     { background: var(--done);      color: white; }
+    .btn-cancel   { background: var(--cancelled); color: white; }
+    .btn-delete   { background: #f3f4f6; color: #6b7280; }
+
+    .empty { text-align: center; padding: 50px 20px; color: var(--muted); }
+    .empty .icon { font-size: 40px; margin-bottom: 10px; }
+
+    /* TIME SLOTS */
+    .slots-section { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 24px; margin-bottom: 28px; }
+    .slots-section h3 { font-size: 16px; font-weight: 700; color: var(--primary); margin-bottom: 4px; }
+    .slots-section p  { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+    .slots-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .slot { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1.5px solid var(--border); color: var(--text); background: white; cursor: default; }
+    .slot.booked { background: #fee2e2; border-color: #fca5a5; color: #991b1b; }
+    .slot.free   { background: #d1fae5; border-color: #6ee7b7; color: #065f46; }
+
+    @media (max-width: 768px) {
+      .stats-row  { grid-template-columns: 1fr 1fr; }
+      .form-grid  { grid-template-columns: 1fr; }
+      nav .nav-links { display: none; }
+      table { font-size: 12px; }
+      td, th { padding: 10px 10px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Spa <span>Joliecao</span> Beauty</div>
+  <div class="nav-links">
+    <a href="/spa">Trang demo</a>
+    <a href="/spa-admin" class="active">Quản lý lịch</a>
+  </div>
+</nav>
+
+<div class="container">
+
+  <div class="page-header">
+    <div>
+      <h1>Quản lý lịch hẹn</h1>
+      <p>Giờ mở cửa: 09:30 – 22:00 &nbsp;|&nbsp; Hôm nay: <%= new Date().toLocaleDateString('vi-VN', {weekday:'long', year:'numeric', month:'long', day:'numeric'}) %></p>
+    </div>
+    <button class="btn btn-accent" onclick="toggleForm()">+ Đặt lịch mới</button>
+  </div>
+
+  <% if (message) { %>
+  <div class="flash <%= message.type %>"><%= message.text %></div>
+  <% } %>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="val"><%= stats.total %></div>
+      <div class="lbl">Tổng lịch hẹn</div>
+    </div>
+    <div class="stat-card s-pending">
+      <div class="val"><%= stats.pending %></div>
+      <div class="lbl">Chờ xác nhận</div>
+    </div>
+    <div class="stat-card s-confirmed">
+      <div class="val"><%= stats.confirmed %></div>
+      <div class="lbl">Đã xác nhận</div>
+    </div>
+    <div class="stat-card s-done">
+      <div class="val"><%= stats.done %></div>
+      <div class="lbl">Hoàn thành</div>
+    </div>
+  </div>
+
+  <!-- TIME SLOTS hôm nay -->
+  <div class="slots-section">
+    <h3>Khung giờ hôm nay (<%= todayStr %>)</h3>
+    <p>Xanh = còn trống &nbsp;·&nbsp; Đỏ = đã có lịch</p>
+    <div class="slots-grid">
+      <% slots.forEach(s => { %>
+      <div class="slot <%= s.booked ? 'booked' : 'free' %>"><%= s.time %> <%= s.booked ? '✕' : '✓' %></div>
+      <% }) %>
+    </div>
+  </div>
+
+  <!-- FORM ĐẶT LỊCH -->
+  <div class="add-form" id="addForm">
+    <h3>Đặt lịch hẹn mới</h3>
+    <form method="POST" action="/spa-admin/bookings">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Tên khách hàng *</label>
+          <input type="text" name="customerName" placeholder="Nguyễn Thị A" required>
+        </div>
+        <div class="form-group">
+          <label>Số điện thoại *</label>
+          <input type="tel" name="phone" placeholder="0901 234 567" required>
+        </div>
+        <div class="form-group">
+          <label>Dịch vụ *</label>
+          <select name="service" required>
+            <option value="">-- Chọn dịch vụ --</option>
+            <option>Facial cơ bản</option>
+            <option>Facial nâng cơ</option>
+            <option>Massage thư giãn</option>
+            <option>Waxing</option>
+            <option>Nails cơ bản</option>
+            <option>Combo chăm sóc da</option>
+            <option>Trị liệu mụn</option>
+            <option>Khác</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Ngày hẹn *</label>
+          <input type="date" name="date" required
+            min="<%= new Date().toISOString().split('T')[0] %>"
+            value="<%= new Date().toISOString().split('T')[0] %>">
+        </div>
+        <div class="form-group">
+          <label>Giờ hẹn * (09:30 – 22:00)</label>
+          <input type="time" name="time" required min="09:30" max="22:00" step="1800">
+        </div>
+        <div class="form-group">
+          <label>Ghi chú</label>
+          <input type="text" name="note" placeholder="Yêu cầu đặc biệt...">
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Lưu lịch hẹn</button>
+        <button type="button" class="btn btn-outline" onclick="toggleForm()">Hủy</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- FILTER -->
+  <div class="toolbar">
+    <form method="GET" action="/spa-admin" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+      <input type="date" name="date" value="<%= filterDate %>" placeholder="Lọc theo ngày">
+      <select name="status">
+        <option value="">Tất cả trạng thái</option>
+        <option value="pending"   <%= filterStatus==='pending'   ?'selected':'' %>>Chờ xác nhận</option>
+        <option value="confirmed" <%= filterStatus==='confirmed' ?'selected':'' %>>Đã xác nhận</option>
+        <option value="done"      <%= filterStatus==='done'      ?'selected':'' %>>Hoàn thành</option>
+        <option value="cancelled" <%= filterStatus==='cancelled' ?'selected':'' %>>Đã hủy</option>
+      </select>
+      <button type="submit" class="btn btn-outline">Lọc</button>
+      <a href="/spa-admin" class="btn btn-outline">Xóa lọc</a>
+    </form>
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-wrap">
+    <% if (bookings.length === 0) { %>
+    <div class="empty">
+      <div class="icon">📅</div>
+      <div>Không có lịch hẹn nào</div>
+    </div>
+    <% } else { %>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Khách hàng</th>
+          <th>Dịch vụ</th>
+          <th>Ngày & Giờ</th>
+          <th>Ghi chú</th>
+          <th>Trạng thái</th>
+          <th>Nguồn</th>
+          <th>Thao tác</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% bookings.forEach((b, i) => { %>
+        <tr>
+          <td class="nowrap" style="color:var(--muted)"><%= i+1 %></td>
+          <td>
+            <div style="font-weight:600"><%= b.customerName %></div>
+            <div style="font-size:12px;color:var(--muted)"><%= b.phone %></div>
+          </td>
+          <td class="nowrap"><%= b.service %></td>
+          <td class="nowrap">
+            <div style="font-weight:600"><%= b.date %></div>
+            <div style="color:var(--accent);font-weight:700"><%= b.time %></div>
+          </td>
+          <td style="max-width:160px;font-size:12px;color:var(--muted)"><%= b.note || '–' %></td>
+          <td class="nowrap">
+            <span class="badge badge-<%= b.status %>">
+              <% if(b.status==='pending')   { %>⏳ Chờ xác nhận
+              <% } else if(b.status==='confirmed') { %>✅ Đã xác nhận
+              <% } else if(b.status==='done')      { %>✔ Hoàn thành
+              <% } else { %>❌ Đã hủy<% } %>
+            </span>
+          </td>
+          <td class="nowrap"><span class="badge badge-<%= b.source %>"><%= b.source %></span></td>
+          <td class="nowrap">
+            <div class="action-btns">
+              <% if(b.status==='pending') { %>
+              <form method="POST" action="/spa-admin/bookings/<%= b._id %>/status" style="display:inline">
+                <input type="hidden" name="status" value="confirmed">
+                <button class="action-btn btn-confirm">Xác nhận</button>
+              </form>
+              <% } %>
+              <% if(b.status==='confirmed') { %>
+              <form method="POST" action="/spa-admin/bookings/<%= b._id %>/status" style="display:inline">
+                <input type="hidden" name="status" value="done">
+                <button class="action-btn btn-done">Hoàn thành</button>
+              </form>
+              <% } %>
+              <% if(b.status==='pending' || b.status==='confirmed') { %>
+              <form method="POST" action="/spa-admin/bookings/<%= b._id %>/status" style="display:inline">
+                <input type="hidden" name="status" value="cancelled">
+                <button class="action-btn btn-cancel">Hủy</button>
+              </form>
+              <% } %>
+              <form method="POST" action="/spa-admin/bookings/<%= b._id %>/delete" style="display:inline"
+                onsubmit="return confirm('Xóa lịch hẹn này?')">
+                <button class="action-btn btn-delete">Xóa</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+    <% } %>
+  </div>
+
+</div>
+
+<script>
+  function toggleForm() {
+    const f = document.getElementById('addForm');
+    f.classList.toggle('open');
+    if (f.classList.contains('open')) f.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+</script>
+</body>
+</html>
