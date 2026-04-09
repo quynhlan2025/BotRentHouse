@@ -96,6 +96,12 @@ app.post('/zalo-inbox/read', async (req, res) => {
   res.json({ ok: true });
 });
 
+app.post('/zalo-inbox/takeover', async (req, res) => {
+  const { userId, takenOver } = req.body;
+  await ZaloConversation.findOneAndUpdate({ zaloUserId: userId }, { $set: { takenOver } });
+  res.json({ ok: true });
+});
+
 // ── SPA ADMIN ─────────────────────────────────────────────────────────────────
 
 // Tạo các khung giờ trong ngày (09:30 – 22:00, bước 30 phút)

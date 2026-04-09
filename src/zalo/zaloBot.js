@@ -122,6 +122,10 @@ async function handleZaloMessage(event) {
   // Lưu tin nhắn của user
   if (text) await saveMessage(userId, profile, 'user', text);
 
+  // Nếu admin đang tiếp quản → bot im lặng
+  const conv = await ZaloConversation.findOne({ zaloUserId: userId });
+  if (conv?.takenOver) return;
+
   if (action === '/start' || action === 'Bắt đầu' || action === 'start') {
     return sendWithMenu(userId, 'Xin chào! 👋 Tôi là Nhà trọ quận 3.', profile);
   }

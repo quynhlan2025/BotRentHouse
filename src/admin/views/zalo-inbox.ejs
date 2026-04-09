@@ -76,7 +76,12 @@
     .chat-header .ch-av img { width: 100%; height: 100%; object-fit: cover; }
     .chat-header .ch-name { font-size: 15px; font-weight: 700; }
     .chat-header .ch-id   { font-size: 11px; color: var(--muted); margin-top: 1px; }
-    .chat-header .ch-badge { margin-left: auto; background: var(--zblueli); color: var(--zblue); font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 20px; }
+    .chat-header .ch-actions { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+    .ch-badge { background: var(--zblueli); color: var(--zblue); font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 20px; }
+    .ch-badge.takeover { background: #fef3c7; color: #92400e; }
+    .btn-takeover { padding: 7px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; border: none; cursor: pointer; }
+    .btn-takeover.take { background: #f59e0b; color: white; }
+    .btn-takeover.give { background: var(--zblue); color: white; }
 
     .chat-messages { flex: 1; overflow-y: auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 10px; }
     .day-divider { text-align: center; font-size: 11px; color: var(--muted); background: rgba(0,0,0,.06); padding: 3px 12px; border-radius: 10px; align-self: center; margin: 4px 0; }
@@ -176,7 +181,15 @@
           <%= selectedUser.phone ? '📱 ' + selectedUser.phone + ' · ' : '' %>ID: <%= selectedUser.zaloUserId %>
         </div>
       </div>
-      <div class="ch-badge">Zalo</div>
+      <div class="ch-actions">
+        <% if (selectedUser.takenOver) { %>
+          <span class="ch-badge takeover">👤 Admin đang tiếp quản</span>
+          <button class="btn-takeover give" onclick="setTakeover(false)">🤖 Trả lại bot</button>
+        <% } else { %>
+          <span class="ch-badge">🤖 Bot đang trả lời</span>
+          <button class="btn-takeover take" onclick="setTakeover(true)">👤 Tiếp quản</button>
+        <% } %>
+      </div>
     </div>
 
     <div class="chat-messages" id="chatMessages">
@@ -199,7 +212,14 @@
     </div>
 
     <div class="reply-bar">
-      <textarea class="reply-input" id="replyInput" placeholder="Nhắn tin cho <%= selectedUser.displayName %>..." rows="1"
+      <% if (selectedUser.takenOver) { %>
+      <span style="font-size:11px;color:#92400e;font-weight:700;white-space:nowrap;">👤 Admin:</span>
+      <% } else { %>
+      <span style="font-size:11px;color:var(--zblue);font-weight:700;white-space:nowrap;">🤖 Bot:</span>
+      <% } %>
+      <textarea class="reply-input" id="replyInput"
+        placeholder="<%= selectedUser.takenOver ? 'Bạn đang nhắn với tư cách Admin...' : 'Reply sẽ gửi qua bot...' %>"
+        rows="1"
         onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendReply();}"></textarea>
       <button class="send-btn" onclick="sendReply()">➤</button>
     </div>
@@ -225,6 +245,17 @@
     document.querySelectorAll('.user-item').forEach(el => {
       el.style.display = el.dataset.name.includes(q) ? '' : 'none';
     });
+  }
+
+  // Tiếp quản / trả bot
+  async function setTakeover(val) {
+    const userId = '<%= selectedUser ? selectedUser.zaloUserId : "" %>';
+    await fetch('/zalo-inbox/takeover', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, takenOver: val }),
+    });
+    location.reload();
   }
 
   // Send reply

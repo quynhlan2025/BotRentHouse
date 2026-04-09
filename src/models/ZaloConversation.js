@@ -13,6 +13,7 @@ const zaloConversationSchema = new mongoose.Schema({
   lastMessage:   { type: String, default: '' },
   lastMessageAt: { type: Date, default: Date.now },
   unread:        { type: Number, default: 0 },
+  takenOver:     { type: Boolean, default: false }, // admin đang tiếp quản
 });
 
 module.exports = mongoose.model('ZaloConversation', zaloConversationSchema);
