@@ -12,31 +12,18 @@ async function sendText(userId, text) {
   });
 }
 
-// Gửi tin nhắn kèm 4 nút quick reply
+// Gửi tin nhắn kèm menu dạng text
 async function sendWithMenu(userId, text) {
-  await axios.post(`${BASE_URL}/sendMessage`, {
-    chat_id: userId,
-    text,
-    reply_markup: {
-      inline_keyboard: [[
-        { text: '📋 Danh sách phòng', callback_data: 'menu_danhsach' },
-        { text: '🔍 Tìm theo giá', callback_data: 'menu_timgia' },
-      ], [
-        { text: '📞 Liên hệ', callback_data: 'menu_lienhe' },
-        { text: '🏠 Giới thiệu', callback_data: 'menu_gioithieu' },
-      ]],
-    },
-  }).catch(async () => {
-    // Fallback: gửi text với hướng dẫn
-    await sendText(userId,
-      text + '\n\n' +
-      'Chọn mục:\n' +
-      '1️⃣ Danh sách phòng\n' +
-      '2️⃣ Tìm theo giá\n' +
-      '3️⃣ Liên hệ\n' +
-      '4️⃣ Giới thiệu'
-    );
-  });
+  await sendText(userId,
+    text + '\n\n' +
+    '━━━━━━━━━━━━━━━\n' +
+    '1️⃣ Danh sách phòng\n' +
+    '2️⃣ Tìm phòng theo giá\n' +
+    '3️⃣ Liên hệ chủ nhà\n' +
+    '4️⃣ Giới thiệu dịch vụ\n' +
+    '━━━━━━━━━━━━━━━\n' +
+    '👉 Nhắn số để chọn'
+  );
 }
 
 // Gửi card phòng
@@ -76,11 +63,11 @@ async function handleZaloMessage(event) {
 
   if (!userId) return;
 
-  if (action === '/start' || action === 'Bắt đầu' || action === '1') {
-    return sendWithMenu(userId, 'Xin chào! 👋 Tôi là Bot Thuê Nhà.\nChọn một mục bên dưới để bắt đầu!');
+  if (action === '/start' || action === 'Bắt đầu' || action === 'start') {
+    return sendWithMenu(userId, 'Xin chào! 👋 Tôi là Bot Thuê Nhà.');
   }
 
-  if (action === 'menu_danhsach' || action === '📋 Danh sách phòng' || action === '1️⃣' || action === '1') {
+  if (action === 'menu_danhsach' || action === '1') {
     const rooms = await Room.find().sort({ price: 1 });
     if (rooms.length === 0) return sendWithMenu(userId, 'Hiện chưa có phòng trọ nào.');
     await sendText(userId, `📋 Danh sách ${rooms.length} phòng trọ:`);
@@ -88,18 +75,18 @@ async function handleZaloMessage(event) {
     return sendWithMenu(userId, 'Bạn cần hỗ trợ thêm gì không?');
   }
 
-  if (action === 'menu_timgia' || action === '🔍 Tìm theo giá' || action === '2') {
+  if (action === 'menu_timgia' || action === '2') {
     userState[userId] = 'waiting_price';
     return sendText(userId, '🔍 Nhập ngân sách tối đa (đơn vị đồng)\nVí dụ: 3000000 hoặc 3tr');
   }
 
-  if (action === 'menu_lienhe' || action === '📞 Liên hệ' || action === '3') {
+  if (action === 'menu_lienhe' || action === '3') {
     return sendWithMenu(userId,
       '📞 Thông tin liên hệ\n\n👤 Chủ nhà: Nguyễn Văn A\n📱 SĐT: 0901 234 567\n🕐 Giờ làm việc: 8:00 - 20:00'
     );
   }
 
-  if (action === 'menu_gioithieu' || action === '🏠 Giới thiệu' || action === '4') {
+  if (action === 'menu_gioithieu' || action === '4') {
     const total = await Room.countDocuments();
     const available = await Room.countDocuments({ status: 'available' });
     return sendWithMenu(userId,
