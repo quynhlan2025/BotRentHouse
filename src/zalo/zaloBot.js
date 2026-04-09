@@ -5,13 +5,45 @@ const ZaloConversation = require('../models/ZaloConversation');
 const BOT_TOKEN = process.env.ZALO_OA_TOKEN;
 const BASE_URL = `https://bot-api.zaloplatforms.com/bot${BOT_TOKEN}`;
 
-// Lưu tin nhắn vào DB
-async function saveMessage(userId, displayName, role, text) {
+// Lấy profile user từ Zalo API
+async function fetchUserProfile(userId) {
   try {
+    const res = await axios.get(`${BASE_URL}/getUserInfo`, {
+      params: { user_id: userId }
+    });
+    const data = res.data?.data || res.data || {};
+    return {
+      displayName: data.display_name || data.name || data.zaloName || '',
+      avatar:      data.avatar       || data.avatarUrl || '',
+      phone:       data.phone        || '',
+    };
+  } catch {
+    return { displayName: '', avatar: '', phone: '' };
+  }
+}
+
+// Lưu tin nhắn vào DB
+async function saveMessage(userId, fromEvent, role, text) {
+  try {
+    const existing = await ZaloConversation.findOne({ zaloUserId: userId });
+
+    // Nếu chưa có profile đầy đủ thì gọi API lấy
+    let profile = { displayName: fromEvent.displayName || '', avatar: fromEvent.avatar || '', phone: fromEvent.phone || '' };
+    if (!existing || !existing.displayName || existing.displayName === 'Khách hàng') {
+      const fetched = await fetchUserProfile(userId);
+      if (fetched.displayName) profile = { ...profile, ...fetched };
+    }
+
     await ZaloConversation.findOneAndUpdate(
       { zaloUserId: userId },
       {
-        $set:  { displayName: displayName || 'Khách hàng', lastMessage: text, lastMessageAt: new Date() },
+        $set: {
+          ...(profile.displayName && { displayName: profile.displayName }),
+          ...(profile.avatar      && { avatar: profile.avatar }),
+          ...(profile.phone       && { phone: profile.phone }),
+          lastMessage: text,
+          lastMessageAt: new Date(),
+        },
         $push: { messages: { role, text, createdAt: new Date() } },
         $inc:  { unread: role === 'user' ? 1 : 0 },
       },
@@ -23,8 +55,8 @@ async function saveMessage(userId, displayName, role, text) {
 }
 
 // Gửi tin nhắn text
-async function sendText(userId, text, displayName) {
-  await saveMessage(userId, displayName, 'bot', text);
+async function sendText(userId, text, profile) {
+  await saveMessage(userId, profile || {}, 'bot', text);
   await axios.post(`${BASE_URL}/sendMessage`, {
     chat_id: userId,
     text,
@@ -32,7 +64,7 @@ async function sendText(userId, text, displayName) {
 }
 
 // Gửi tin nhắn kèm menu dạng text
-async function sendWithMenu(userId, text, displayName) {
+async function sendWithMenu(userId, text, profile) {
   await sendText(userId,
     text + '\n\n' +
     '━━━━━━━━━━━━━━━\n' +
@@ -42,12 +74,12 @@ async function sendWithMenu(userId, text, displayName) {
     '4️⃣ Giới thiệu dịch vụ\n' +
     '━━━━━━━━━━━━━━━\n' +
     '👉 Nhắn số để chọn',
-    displayName
+    profile
   );
 }
 
 // Gửi card phòng
-async function sendRoomCard(userId, room, displayName) {
+async function sendRoomCard(userId, room, profile) {
   const furniture = { none: 'Không nội thất', basic: 'Nội thất cơ bản', full: 'Đầy đủ nội thất' };
   const status = { available: '✅ Còn trống', rented: '❌ Đã có người thuê' };
   const text =
@@ -59,14 +91,14 @@ async function sendRoomCard(userId, room, displayName) {
     `📞 ${room.contact}`;
 
   if (room.images && room.images.length > 0) {
-    await saveMessage(userId, displayName, 'bot', text);
+    await saveMessage(userId, profile || {}, 'bot', text);
     await axios.post(`${BASE_URL}/sendPhoto`, {
       chat_id: userId,
       photo: room.images[0],
       caption: text,
-    }).catch(() => sendText(userId, text, displayName));
+    }).catch(() => sendText(userId, text, profile));
   } else {
-    await sendText(userId, text, displayName);
+    await sendText(userId, text, profile);
   }
 }
 
@@ -75,32 +107,36 @@ const userState = {};
 
 // Xử lý tin nhắn
 async function handleZaloMessage(event) {
-  const userId      = event.callback_query?.from?.id || event.message?.from?.id || event.sender?.id;
-  const displayName = event.message?.from?.first_name || event.sender?.display_name || '';
+  const userId = event.callback_query?.from?.id || event.message?.from?.id || event.sender?.id;
+  const profile = {
+    displayName: event.message?.from?.first_name || event.sender?.display_name || event.sender?.name || '',
+    avatar:      event.sender?.avatar || event.message?.from?.avatar || '',
+    phone:       event.sender?.phone  || event.message?.from?.phone  || '',
+  };
   const callbackData = event.callback_query?.data || '';
-  const text  = (event.message?.text || '').trim();
+  const text   = (event.message?.text || '').trim();
   const action = callbackData || text;
 
   if (!userId) return;
 
   // Lưu tin nhắn của user
-  if (text) await saveMessage(userId, displayName, 'user', text);
+  if (text) await saveMessage(userId, profile, 'user', text);
 
   if (action === '/start' || action === 'Bắt đầu' || action === 'start') {
-    return sendWithMenu(userId, 'Xin chào! 👋 Tôi là Nhà trọ quận 3.', displayName);
+    return sendWithMenu(userId, 'Xin chào! 👋 Tôi là Nhà trọ quận 3.', profile);
   }
 
   if (action === 'menu_danhsach' || action === '1') {
     const rooms = await Room.find().sort({ price: 1 });
-    if (rooms.length === 0) return sendWithMenu(userId, 'Hiện chưa có phòng trọ nào.', displayName);
-    await sendText(userId, `📋 Danh sách ${rooms.length} phòng trọ:`, displayName);
-    for (const room of rooms) await sendRoomCard(userId, room, displayName);
-    return sendWithMenu(userId, 'Bạn cần hỗ trợ thêm gì không?', displayName);
+    if (rooms.length === 0) return sendWithMenu(userId, 'Hiện chưa có phòng trọ nào.', profile);
+    await sendText(userId, `📋 Danh sách ${rooms.length} phòng trọ:`, profile);
+    for (const room of rooms) await sendRoomCard(userId, room, profile);
+    return sendWithMenu(userId, 'Bạn cần hỗ trợ thêm gì không?', profile);
   }
 
   if (action === 'menu_timgia' || action === '2') {
     userState[userId] = 'waiting_price';
-    return sendText(userId, '🔍 Nhập ngân sách tối đa (đơn vị đồng)\nVí dụ: 3000000 hoặc 3tr', displayName);
+    return sendText(userId, '🔍 Nhập ngân sách tối đa (đơn vị đồng)\nVí dụ: 3000000 hoặc 3tr', profile);
   }
 
   if (action === 'menu_lienhe' || action === '3') {
@@ -125,20 +161,20 @@ async function handleZaloMessage(event) {
     const maxPrice   = parseInt(normalized);
 
     if (isNaN(maxPrice) || maxPrice <= 0) {
-      return sendWithMenu(userId, '❌ Giá không hợp lệ. Ví dụ: 3000000 hoặc 3tr', displayName);
+      return sendWithMenu(userId, '❌ Giá không hợp lệ. Ví dụ: 3000000 hoặc 3tr', profile);
     }
 
     const rooms = await Room.find({ price: { $lte: maxPrice } }).sort({ price: 1 });
     if (rooms.length === 0) {
-      return sendWithMenu(userId, `😔 Không có phòng nào dưới ${maxPrice.toLocaleString('vi-VN')}đ.`, displayName);
+      return sendWithMenu(userId, `😔 Không có phòng nào dưới ${maxPrice.toLocaleString('vi-VN')}đ.`, profile);
     }
 
-    await sendText(userId, `🔍 Tìm thấy ${rooms.length} phòng dưới ${maxPrice.toLocaleString('vi-VN')}đ:`, displayName);
-    for (const room of rooms) await sendRoomCard(userId, room, displayName);
-    return sendWithMenu(userId, 'Bạn cần hỗ trợ thêm gì không?', displayName);
+    await sendText(userId, `🔍 Tìm thấy ${rooms.length} phòng dưới ${maxPrice.toLocaleString('vi-VN')}đ:`, profile);
+    for (const room of rooms) await sendRoomCard(userId, room, profile);
+    return sendWithMenu(userId, 'Bạn cần hỗ trợ thêm gì không?', profile);
   }
 
-  return sendWithMenu(userId, 'Xin chào! 👋 Chọn một mục bên dưới để bắt đầu!', displayName);
+  return sendWithMenu(userId, 'Xin chào! 👋 Chọn một mục bên dưới để bắt đầu!', profile);
 }
 
 module.exports = { handleZaloMessage };

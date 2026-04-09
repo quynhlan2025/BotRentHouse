@@ -172,7 +172,9 @@
       </div>
       <div>
         <div class="ch-name"><%= selectedUser.displayName %></div>
-        <div class="ch-id">Zalo ID: <%= selectedUser.zaloUserId %></div>
+        <div class="ch-id">
+          <%= selectedUser.phone ? '📱 ' + selectedUser.phone + ' · ' : '' %>ID: <%= selectedUser.zaloUserId %>
+        </div>
       </div>
       <div class="ch-badge">Zalo</div>
     </div>
