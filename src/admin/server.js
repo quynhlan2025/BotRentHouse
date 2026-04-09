@@ -5,6 +5,7 @@ const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const Room = require('../models/Room');
 const Booking = require('../models/Booking');
+const ZaloConversation = require('../models/ZaloConversation');
 const { handleZaloMessage } = require('../zalo/zaloBot');
 
 const app = express();
@@ -56,6 +57,44 @@ app.get('/spa', (req, res) => res.render('spa-landing'));
 
 // Bots comparison landing page
 app.get('/bots', (req, res) => res.render('bots-landing'));
+
+// SaaS provider landing page
+app.get('/mia', (req, res) => res.render('saas-landing'));
+
+// ── ZALO INBOX ───────────────────────────────────────────────────────────────
+app.get('/zalo-inbox', async (req, res) => {
+  const conversations = await ZaloConversation.find().sort({ lastMessageAt: -1 });
+  let selectedUser = null;
+  if (req.query.user) {
+    selectedUser = await ZaloConversation.findOne({ zaloUserId: req.query.user });
+  }
+  res.render('zalo-inbox', { conversations, selectedUser });
+});
+
+app.post('/zalo-inbox/send', async (req, res) => {
+  const { userId, text } = req.body;
+  if (!userId || !text) return res.json({ ok: false });
+  try {
+    const axios = require('axios');
+    const BOT_TOKEN = process.env.ZALO_OA_TOKEN;
+    await axios.post(`https://bot-api.zaloplatforms.com/bot${BOT_TOKEN}/sendMessage`, {
+      chat_id: userId, text,
+    });
+    await ZaloConversation.findOneAndUpdate(
+      { zaloUserId: userId },
+      { $push: { messages: { role: 'bot', text, createdAt: new Date() } }, $set: { lastMessage: text, lastMessageAt: new Date() } }
+    );
+    res.json({ ok: true });
+  } catch (err) {
+    res.json({ ok: false, error: err.message });
+  }
+});
+
+app.post('/zalo-inbox/read', async (req, res) => {
+  const { userId } = req.body;
+  await ZaloConversation.findOneAndUpdate({ zaloUserId: userId }, { $set: { unread: 0 } });
+  res.json({ ok: true });
+});
 
 // ── SPA ADMIN ─────────────────────────────────────────────────────────────────
 
