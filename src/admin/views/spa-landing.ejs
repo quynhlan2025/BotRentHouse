@@ -73,24 +73,67 @@
     /* DEMO */
     .demo { padding: 72px 20px; background: var(--bg); }
     .demo-title { text-align: center; margin-bottom: 48px; }
-    .demo-title h2 { font-size: clamp(20px,2.5vw,28px); font-weight: 800; margin-bottom: 10px; }
-    .demo-title p  { font-size: 14px; color: #777; }
+    .demo-title h2 { font-size: clamp(20px,2.5vw,28px); font-weight: 800; margin-bottom: 0; }
     .demo-phones { max-width: 680px; margin: 0 auto 36px; display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
     .demo-cta { text-align: center; }
     .demo-cta a { display: inline-flex; align-items: center; gap: 7px; background: var(--p); color: white; padding: 13px 28px; border-radius: 8px; font-weight: 600; font-size: 14px; text-decoration: none; }
 
-    /* Phone shell */
-    .phone { border-radius: 34px; padding: 9px; box-shadow: 0 20px 56px rgba(0,0,0,.22); margin: 0 auto; }
-    .phone.dark-shell { background: #1c1c1e; }
-    .phone.white-shell { background: #e8e8e8; box-shadow: 0 20px 56px rgba(0,0,0,.15), inset 0 0 0 1px rgba(0,0,0,.1); }
-    .screen { border-radius: 26px; overflow: hidden; }
+    /* ── iPhone 17 Pro Max shell ── */
+    .phone {
+      position: relative; margin: 0 auto;
+      /* Titanium frame */
+      border-radius: 50px;
+      padding: 12px 10px;
+      box-shadow:
+        0 0 0 1.5px #8a8a8e,
+        0 0 0 3px #6e6e73,
+        0 28px 70px rgba(0,0,0,.45),
+        0 8px 20px rgba(0,0,0,.3);
+    }
+    .phone.dark-shell {
+      background: linear-gradient(160deg, #3a3a3c 0%, #1c1c1e 40%, #2c2c2e 100%);
+      box-shadow: 0 0 0 1.5px #48484a, 0 0 0 3px #3a3a3c, 0 28px 70px rgba(0,0,0,.55), 0 8px 20px rgba(0,0,0,.35);
+    }
+    .phone.white-shell {
+      background: linear-gradient(160deg, #f5f5f0 0%, #e8e8e3 40%, #f0f0eb 100%);
+      box-shadow: 0 0 0 1.5px #c8c8c3, 0 0 0 3px #b0b0ab, 0 28px 70px rgba(0,0,0,.25), 0 8px 20px rgba(0,0,0,.15);
+    }
+    /* Side buttons */
+    .phone::before {
+      content: '';
+      position: absolute; right: -4px; top: 90px;
+      width: 3px; height: 50px; border-radius: 0 3px 3px 0;
+      background: inherit;
+      box-shadow: 0 0 0 1px #6e6e73;
+    }
+    .phone.dark-shell::before { background: #3a3a3c; box-shadow: 0 0 0 1px #48484a; }
+    .phone.white-shell::before { background: #d8d8d3; box-shadow: 0 0 0 1px #b0b0ab; }
+    .phone::after {
+      content: '';
+      position: absolute; left: -4px; top: 80px;
+      width: 3px; height: 36px; border-radius: 3px 0 0 3px;
+      background: inherit;
+      box-shadow: 0 48px 0 0 inherit, 0 90px 0 0 inherit;
+    }
+    .phone.dark-shell::after { background: #3a3a3c; box-shadow: 0 0 0 1px #48484a, 0 48px 0 1px #48484a, 0 90px 0 1px #48484a; }
+    .phone.white-shell::after { background: #d8d8d3; box-shadow: 0 0 0 1px #b0b0ab, 0 48px 0 1px #b0b0ab, 0 90px 0 1px #b0b0ab; }
+
+    .screen { border-radius: 40px; overflow: hidden; position: relative; }
+
+    /* Dynamic Island */
+    .dynamic-island {
+      position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+      width: 100px; height: 30px; background: #000;
+      border-radius: 20px; z-index: 10;
+      box-shadow: 0 0 0 2px rgba(0,0,0,.8);
+    }
 
     /* ── ZALO ── */
     .zalo-bar {
       background: #0068ff; color: white;
       padding: 8px 12px 0; display: flex; flex-direction: column;
     }
-    .zalo-status-bar { display: flex; justify-content: space-between; font-size: 9px; opacity: .9; margin-bottom: 6px; }
+    .zalo-status-bar { display: flex; justify-content: space-between; font-size: 9px; opacity: .9; margin-bottom: 6px; padding-top: 36px; }
     .zalo-header { display: flex; align-items: center; gap: 8px; padding-bottom: 10px; }
     .zalo-back { font-size: 16px; opacity: .9; }
     .zalo-av {
@@ -117,7 +160,7 @@
     .zsend { width: 28px; height: 28px; background: #0068ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; }
 
     /* ── WHATSAPP ── */
-    .wa-statusbar { background: #075e54; color: white; padding: 5px 12px; display: flex; justify-content: space-between; font-size: 9px; }
+    .wa-statusbar { background: #075e54; color: white; padding: 40px 12px 5px; display: flex; justify-content: space-between; font-size: 9px; }
     .wa-bar { background: #075e54; color: white; padding: 8px 12px 10px; display: flex; align-items: center; gap: 8px; }
     .wa-av {
       width: 32px; height: 32px; border-radius: 50%;
@@ -265,7 +308,6 @@
   <div class="sec-label">Demo</div>
   <div class="demo-title">
     <h2>Hoạt động trên Zalo & WhatsApp</h2>
-    <p>Khách nhắn app nào, trợ lý có mặt ở đó — giao diện y hệt chat thật</p>
   </div>
 
   <div class="demo-phones">
@@ -273,6 +315,7 @@
     <!-- ZALO PHONE -->
     <div class="phone dark-shell">
       <div class="screen">
+        <div class="dynamic-island"></div>
         <!-- Zalo top bar -->
         <div class="zalo-bar">
           <div class="zalo-status-bar">
@@ -326,6 +369,7 @@
     <!-- WHATSAPP PHONE -->
     <div class="phone white-shell">
       <div class="screen">
+        <div class="dynamic-island"></div>
         <!-- WhatsApp top bar -->
         <div class="wa-statusbar">
           <span>9:41</span><span>▲ 4G ■■■■</span>
