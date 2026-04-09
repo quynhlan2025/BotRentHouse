@@ -9,6 +9,8 @@ const ADMIN_PORT = process.env.PORT || process.env.ADMIN_PORT || 3000;
 const Conversation = require('./src/models/Conversation');
 
 const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true });
+
+const MODEL = process.env.CLAUDE_MODEL || 'claude-haiku-4-5-20251001';
 const claude = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 // Lưu trạng thái user đang chờ nhập giá
@@ -52,7 +54,7 @@ async function askClaude(userId, firstName, username, userMessage) {
   const systemPrompt = `Bạn là trợ lý tư vấn thuê nhà tên "Nhà trọ quận 3". Hỗ trợ khách tìm phòng trọ, tư vấn hợp đồng, giải đáp thắc mắc.\n\nDanh sách phòng:\n${roomList}\n\nLiên hệ: 0901 234 567 (8:00-20:00)\n\nTrả lời ngắn gọn, thân thiện bằng tiếng Việt.`;
 
   const response = await claude.messages.create({
-    model: 'claude-haiku-4-5-20251001',
+    model: MODEL,
     max_tokens: 1024,
     system: systemPrompt,
     messages: conv.messages.map(m => ({ role: m.role, content: m.content })),

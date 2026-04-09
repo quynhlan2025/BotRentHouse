@@ -4,6 +4,9 @@ const { getRoomsSummary } = require('./roomHandler');
 
 const claude = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
+// Bot AI = haiku (rẻ), Bot AI Pro = sonnet (xịn hơn)
+const MODEL = process.env.CLAUDE_MODEL || 'claude-haiku-4-5-20251001';
+
 async function buildSystemPrompt() {
   const roomList = await getRoomsSummary();
   return `Bạn là trợ lý tư vấn thuê nhà tên "Nhà trọ quận 3". Hỗ trợ khách tìm phòng trọ, tư vấn hợp đồng, giải đáp thắc mắc về thuê nhà.
@@ -32,7 +35,7 @@ async function askClaude(userId, firstName, username, userMessage) {
   const systemPrompt = await buildSystemPrompt();
 
   const response = await claude.messages.create({
-    model: 'claude-haiku-4-5-20251001',
+    model: MODEL,
     max_tokens: 1024,
     system: systemPrompt,
     messages: conv.messages.map(m => ({ role: m.role, content: m.content })),
