@@ -42,8 +42,7 @@ app.post('/zalo/webhook', async (req, res) => {
   res.json({ ok: true });
   const event = req.body;
   console.log('Zalo event:', JSON.stringify(event));
-  // Zalo Bot API format (giống Telegram)
-  if (event.message) {
+  if (event.message || event.callback_query) {
     handleZaloMessage(event).catch(err => console.error('Zalo error:', err.message));
   }
 });
