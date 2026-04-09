@@ -72,24 +72,71 @@
 
     /* DEMO */
     .demo { padding: 72px 20px; background: var(--bg); }
-    .demo-inner { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
-    .demo-copy h2 { font-size: clamp(20px, 2.5vw, 28px); font-weight: 800; line-height: 1.35; margin-bottom: 14px; }
-    .demo-copy p  { font-size: 14px; color: #777; line-height: 1.7; margin-bottom: 24px; }
-    .demo-copy a  { display: inline-flex; align-items: center; gap: 7px; background: var(--p); color: white; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; text-decoration: none; }
+    .demo-title { text-align: center; margin-bottom: 48px; }
+    .demo-title h2 { font-size: clamp(20px,2.5vw,28px); font-weight: 800; margin-bottom: 10px; }
+    .demo-title p  { font-size: 14px; color: #777; }
+    .demo-phones { max-width: 680px; margin: 0 auto 36px; display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+    .demo-cta { text-align: center; }
+    .demo-cta a { display: inline-flex; align-items: center; gap: 7px; background: var(--p); color: white; padding: 13px 28px; border-radius: 8px; font-weight: 600; font-size: 14px; text-decoration: none; }
 
-    .phone { background: #1a1a1a; border-radius: 34px; padding: 10px; box-shadow: 0 20px 56px rgba(0,0,0,.2); max-width: 280px; margin: 0 auto; }
-    .screen { background: #ece5dd; border-radius: 26px; overflow: hidden; }
-    .ph-header { background: var(--p); color: white; padding: 13px 14px; display: flex; align-items: center; gap: 9px; }
-    .ph-av { width: 32px; height: 32px; background: rgba(255,255,255,.22); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; }
-    .ph-name { font-size: 13px; font-weight: 600; }
-    .ph-status { font-size: 10px; opacity: .8; }
-    .ph-body { padding: 10px; display: flex; flex-direction: column; gap: 7px; min-height: 310px; }
-    .m { max-width: 85%; padding: 8px 11px; font-size: 12px; line-height: 1.5; border-radius: 8px; }
-    .mb { background: white; color: #333; align-self: flex-start; border-radius: 2px 8px 8px 8px; }
-    .mu { background: #dcf8c6; color: #333; align-self: flex-end; border-radius: 8px 2px 8px 8px; }
-    .mt { font-size: 10px; color: #aaa; margin-top: 2px; }
-    .mbtns { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
-    .mbtn { background: var(--pl); border: 1px solid var(--a); color: var(--p); padding: 3px 8px; border-radius: 10px; font-size: 11px; }
+    /* Phone shell */
+    .phone { border-radius: 34px; padding: 9px; box-shadow: 0 20px 56px rgba(0,0,0,.22); margin: 0 auto; }
+    .phone.dark-shell { background: #1c1c1e; }
+    .phone.white-shell { background: #e8e8e8; box-shadow: 0 20px 56px rgba(0,0,0,.15), inset 0 0 0 1px rgba(0,0,0,.1); }
+    .screen { border-radius: 26px; overflow: hidden; }
+
+    /* ── ZALO ── */
+    .zalo-bar {
+      background: #0068ff; color: white;
+      padding: 8px 12px 0; display: flex; flex-direction: column;
+    }
+    .zalo-status-bar { display: flex; justify-content: space-between; font-size: 9px; opacity: .9; margin-bottom: 6px; }
+    .zalo-header { display: flex; align-items: center; gap: 8px; padding-bottom: 10px; }
+    .zalo-back { font-size: 16px; opacity: .9; }
+    .zalo-av {
+      width: 32px; height: 32px; border-radius: 50%; background: white;
+      display: flex; align-items: center; justify-content: center; overflow: hidden;
+    }
+    .zalo-logo {
+      width: 28px; height: 28px; background: #0068ff; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-size: 14px; font-weight: 900; font-style: italic;
+    }
+    .zalo-info .zalo-name { font-size: 13px; font-weight: 700; }
+    .zalo-info .zalo-sub  { font-size: 9px; opacity: .8; }
+    .zalo-icons { margin-left: auto; display: flex; gap: 10px; font-size: 14px; opacity: .9; }
+    .zalo-body { background: #f0f2f5; padding: 10px; display: flex; flex-direction: column; gap: 6px; min-height: 280px; }
+    .zm { max-width: 82%; padding: 7px 10px; font-size: 11.5px; line-height: 1.5; border-radius: 8px; }
+    .zmb { background: white; color: #222; align-self: flex-start; border-radius: 2px 10px 10px 10px; box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+    .zmu { background: #d9f2ff; color: #003d99; align-self: flex-end; border-radius: 10px 2px 10px 10px; }
+    .zmt { font-size: 9.5px; color: #aaa; margin-top: 2px; }
+    .zbtns { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+    .zbtn { background: #e8f0ff; border: 1px solid #99bbff; color: #0052cc; padding: 3px 8px; border-radius: 10px; font-size: 10.5px; font-weight: 500; }
+    .zalo-inputbar { background: white; padding: 8px 10px; display: flex; align-items: center; gap: 6px; border-top: 1px solid #e8e8e8; }
+    .zinput { flex:1; background: #f0f2f5; border-radius: 18px; padding: 6px 12px; font-size: 11px; color: #999; }
+    .zsend { width: 28px; height: 28px; background: #0068ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; }
+
+    /* ── WHATSAPP ── */
+    .wa-statusbar { background: #075e54; color: white; padding: 5px 12px; display: flex; justify-content: space-between; font-size: 9px; }
+    .wa-bar { background: #075e54; color: white; padding: 8px 12px 10px; display: flex; align-items: center; gap: 8px; }
+    .wa-av {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: #25d366; display: flex; align-items: center; justify-content: center;
+    }
+    .wa-logo { font-size: 18px; }
+    .wa-info .wa-name { font-size: 13px; font-weight: 700; }
+    .wa-info .wa-sub  { font-size: 9px; opacity: .8; }
+    .wa-icons { margin-left: auto; display: flex; gap: 12px; font-size: 14px; opacity: .9; }
+    .wa-body { background: #e5ddd5; background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c8b89a' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); padding: 10px; display: flex; flex-direction: column; gap: 6px; min-height: 280px; }
+    .wm { max-width: 82%; padding: 7px 10px; font-size: 11.5px; line-height: 1.5; border-radius: 8px; position: relative; }
+    .wmb { background: white; color: #222; align-self: flex-start; border-radius: 2px 8px 8px 8px; box-shadow: 0 1px 1px rgba(0,0,0,.1); }
+    .wmu { background: #dcf8c6; color: #222; align-self: flex-end; border-radius: 8px 2px 8px 8px; box-shadow: 0 1px 1px rgba(0,0,0,.1); }
+    .wmt { font-size: 9.5px; color: #aaa; margin-top: 2px; text-align: right; }
+    .wbtns { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; border-top: 1px solid #f0f0f0; padding-top: 6px; }
+    .wbtn { color: #128c7e; font-size: 11px; font-weight: 600; padding: 2px 0; display: flex; align-items: center; gap: 4px; }
+    .wa-inputbar { background: #f0f0f0; padding: 6px 8px; display: flex; align-items: center; gap: 6px; }
+    .wainput { flex:1; background: white; border-radius: 20px; padding: 7px 12px; font-size: 11px; color: #999; }
+    .wasend { width: 30px; height: 30px; background: #075e54; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; }
 
     /* PLANS */
     .plans-sec { padding: 72px 20px; background: white; }
@@ -143,9 +190,9 @@
       .plans { grid-template-columns: 1fr; }
       .plan.featured { transform: none; }
     }
-    @media (max-width: 680px) {
+    @media (max-width: 600px) {
       nav { padding: 12px 16px; }
-      .demo-inner { grid-template-columns: 1fr; }
+      .demo-phones { grid-template-columns: 1fr; max-width: 300px; }
       .hero-btns .btn { width: 100%; max-width: 280px; justify-content: center; }
     }
   </style>
@@ -216,54 +263,120 @@
 <!-- DEMO -->
 <section class="demo" id="demo">
   <div class="sec-label">Demo</div>
-  <div class="sec-title">Xem bot hoạt động thực tế</div>
-  <div class="demo-inner">
-    <div class="demo-copy">
-      <h2>Đặt lịch trong vòng 1 phút qua Zalo</h2>
-      <p>Khách không cần tải app, không cần gọi điện. Cứ nhắn tin là xong — ngay cả lúc 2 giờ sáng khi spa đóng cửa.</p>
-      <a href="#contact">💬 Tôi muốn dùng thử</a>
-    </div>
-    <div class="phone">
+  <div class="demo-title">
+    <h2>Hoạt động trên Zalo & WhatsApp</h2>
+    <p>Khách nhắn app nào, trợ lý có mặt ở đó — giao diện y hệt chat thật</p>
+  </div>
+
+  <div class="demo-phones">
+
+    <!-- ZALO PHONE -->
+    <div class="phone dark-shell">
       <div class="screen">
-        <div class="ph-header">
-          <div class="ph-av">💆</div>
-          <div>
-            <div class="ph-name">Joliecao Beauty</div>
-            <div class="ph-status">🟢 Đang hoạt động</div>
+        <!-- Zalo top bar -->
+        <div class="zalo-bar">
+          <div class="zalo-status-bar">
+            <span>9:41</span><span>▲ 4G ■■■■</span>
+          </div>
+          <div class="zalo-header">
+            <div class="zalo-back">‹</div>
+            <div class="zalo-av"><div class="zalo-logo">Z</div></div>
+            <div class="zalo-info">
+              <div class="zalo-name">Joliecao Beauty</div>
+              <div class="zalo-sub">🟢 Đang hoạt động</div>
+            </div>
+            <div class="zalo-icons"><span>📞</span><span>⋮</span></div>
           </div>
         </div>
-        <div class="ph-body">
-          <div class="m mb">
-            Xin chào! ✨ Chọn dịch vụ bạn muốn:
-            <div class="mbtns">
-              <span class="mbtn">💆 Massage</span>
-              <span class="mbtn">🌸 Facial</span>
-              <span class="mbtn">💅 Nail</span>
-              <span class="mbtn">📋 Lịch sử</span>
+        <!-- Zalo chat -->
+        <div class="zalo-body">
+          <div class="zm zmb">
+            Xin chào! ✨ Chọn dịch vụ:
+            <div class="zbtns">
+              <span class="zbtn">💆 Massage</span>
+              <span class="zbtn">🌸 Facial</span>
+              <span class="zbtn">💅 Nail</span>
             </div>
-            <div class="mt">10:00</div>
+            <div class="zmt">10:00</div>
           </div>
-          <div class="m mu">Massage body <div class="mt">10:01</div></div>
-          <div class="m mb">
-            Chọn ngày & giờ bạn muốn đến 📅
-            <div class="mbtns">
-              <span class="mbtn">Thứ 5 – 14:00</span>
-              <span class="mbtn">Thứ 6 – 10:00</span>
-              <span class="mbtn">Thứ 7 – 09:30</span>
+          <div class="zm zmu">Massage body<div class="zmt">10:01</div></div>
+          <div class="zm zmb">
+            Chọn giờ bạn muốn 📅
+            <div class="zbtns">
+              <span class="zbtn">T5 – 14:00</span>
+              <span class="zbtn">T6 – 10:00</span>
             </div>
-            <div class="mt">10:01</div>
+            <div class="zmt">10:01</div>
           </div>
-          <div class="m mu">Thứ 5 – 14:00 <div class="mt">10:02</div></div>
-          <div class="m mb">
+          <div class="zm zmu">Thứ 5 – 14:00<div class="zmt">10:02</div></div>
+          <div class="zm zmb">
             ✅ Đặt lịch thành công!<br>
-            📅 Thứ 5, 10/04 · 14:00<br>
-            💆 Massage body 60p<br><br>
-            🔔 Trợ lý sẽ nhắc bạn trước 2 tiếng!
-            <div class="mt">10:02</div>
+            📅 T5, 10/04 · 14:00<br>
+            🔔 Trợ lý nhắc trước 2 tiếng!
+            <div class="zmt">10:02</div>
           </div>
+        </div>
+        <div class="zalo-inputbar">
+          <div class="zinput">Nhắn tin...</div>
+          <div class="zsend">➤</div>
         </div>
       </div>
     </div>
+
+    <!-- WHATSAPP PHONE -->
+    <div class="phone white-shell">
+      <div class="screen">
+        <!-- WhatsApp top bar -->
+        <div class="wa-statusbar">
+          <span>9:41</span><span>▲ 4G ■■■■</span>
+        </div>
+        <div class="wa-bar">
+          <div class="wa-back" style="color:white;font-size:16px;opacity:.9">‹</div>
+          <div class="wa-av"><div class="wa-logo">💬</div></div>
+          <div class="wa-info">
+            <div class="wa-name">Joliecao Beauty</div>
+            <div class="wa-sub">online</div>
+          </div>
+          <div class="wa-icons"><span>📹</span><span>📞</span><span>⋮</span></div>
+        </div>
+        <!-- WhatsApp chat -->
+        <div class="wa-body">
+          <div class="wm wmb">
+            Hi! ✨ Choose your service:
+            <div class="wbtns">
+              <div class="wbtn">💆 Massage</div>
+              <div class="wbtn">🌸 Facial</div>
+              <div class="wbtn">💅 Nail</div>
+            </div>
+            <div class="wmt">10:00 ✓✓</div>
+          </div>
+          <div class="wm wmu">Massage body<div class="wmt">10:01 ✓✓</div></div>
+          <div class="wm wmb">
+            Pick your slot 📅
+            <div class="wbtns">
+              <div class="wbtn">Thu – 2:00 PM</div>
+              <div class="wbtn">Fri – 10:00 AM</div>
+            </div>
+            <div class="wmt">10:01 ✓✓</div>
+          </div>
+          <div class="wm wmu">Thu – 2:00 PM<div class="wmt">10:02 ✓✓</div></div>
+          <div class="wm wmb">
+            ✅ Booking confirmed!<br>
+            📅 Thu, Apr 10 · 2:00 PM<br>
+            🔔 Reminder 2hrs before!
+            <div class="wmt">10:02 ✓✓</div>
+          </div>
+        </div>
+        <div class="wa-inputbar">
+          <div class="wainput">Message...</div>
+          <div class="wasend">🎤</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="demo-cta">
+    <a href="#contact">💬 Tôi muốn dùng thử miễn phí</a>
   </div>
 </section>
 
