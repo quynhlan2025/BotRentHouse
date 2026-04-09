@@ -39,9 +39,11 @@ app.get('/zalo/webhook', (req, res) => {
 });
 
 app.post('/zalo/webhook', async (req, res) => {
-  res.json({ error: 0 });
+  res.json({ ok: true });
   const event = req.body;
-  if (event.event_name === 'user_send_text' || event.event_name === 'follow') {
+  console.log('Zalo event:', JSON.stringify(event));
+  // Zalo Bot API format (giống Telegram)
+  if (event.message) {
     handleZaloMessage(event).catch(err => console.error('Zalo error:', err.message));
   }
 });
