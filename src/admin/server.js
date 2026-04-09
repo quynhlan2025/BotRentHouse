@@ -4,8 +4,10 @@ const multer = require('multer');
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const Room = require('../models/Room');
+const { handleZaloMessage } = require('../zalo/zaloBot');
 
 const app = express();
+app.use(express.json());
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -29,6 +31,19 @@ const storage = new CloudinaryStorage({
 const upload = multer({
   storage,
   limits: { fileSize: 5 * 1024 * 1024 },
+});
+
+// Zalo webhook
+app.get('/zalo/webhook', (req, res) => {
+  res.json({ error: 0, data: req.query });
+});
+
+app.post('/zalo/webhook', async (req, res) => {
+  res.json({ error: 0 });
+  const event = req.body;
+  if (event.event_name === 'user_send_text' || event.event_name === 'follow') {
+    handleZaloMessage(event).catch(err => console.error('Zalo error:', err.message));
+  }
 });
 
 // Trang chi tiết phòng (public)
