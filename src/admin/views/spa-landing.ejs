@@ -91,24 +91,39 @@
     .mbtns { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
     .mbtn { background: var(--pl); border: 1px solid var(--a); color: var(--p); padding: 3px 8px; border-radius: 10px; font-size: 11px; }
 
-    /* PRICING */
-    .pricing { padding: 72px 20px; background: white; }
-    .price-card {
-      max-width: 420px; margin: 0 auto; border: 2px solid var(--a);
-      border-radius: 16px; padding: 36px; text-align: center; position: relative;
-    }
-    .price-badge {
-      position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
-      background: var(--a); color: white; padding: 4px 18px; border-radius: 20px; font-size: 12px; font-weight: 700;
-    }
-    .price-val { font-size: 48px; font-weight: 800; color: var(--text); margin: 12px 0 4px; }
-    .price-val span { font-size: 16px; font-weight: 400; color: #999; }
-    .price-sub { font-size: 13px; color: #bbb; margin-bottom: 24px; }
-    .price-list { list-style: none; text-align: left; display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
-    .price-list li { font-size: 14px; color: #555; display: flex; align-items: center; gap: 9px; }
-    .price-list li::before { content: '✓'; color: var(--a); font-weight: 700; flex-shrink: 0; }
-    .price-cta { display: block; background: var(--p); color: white; padding: 14px; border-radius: 9px; font-weight: 700; font-size: 15px; text-decoration: none; }
-    .price-cta:hover { background: var(--pd); }
+    /* PLANS */
+    .plans-sec { padding: 72px 20px; background: white; }
+    .plans { max-width: 1040px; margin: 0 auto; display: grid; grid-template-columns: repeat(3,1fr); gap: 22px; align-items: start; }
+    .plan { border-radius: 16px; border: 2px solid #ede8e0; background: white; overflow: hidden; transition: transform .2s, box-shadow .2s; }
+    .plan:hover { transform: translateY(-5px); box-shadow: 0 16px 44px rgba(0,0,0,.1); }
+    .plan.featured { border-color: var(--p); transform: scale(1.03); box-shadow: 0 12px 40px rgba(139,115,85,.18); }
+    .plan.featured:hover { transform: scale(1.03) translateY(-5px); }
+    .plan.pro { border-color: #6d28d9; }
+    .plan-head { padding: 26px 24px 20px; }
+    .plan-badge { display: inline-block; padding: 3px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; margin-bottom: 12px; }
+    .badge-b { background: #f1f5f9; color: #64748b; }
+    .badge-a { background: var(--pl); color: var(--p); }
+    .badge-p { background: #ede9fe; color: #6d28d9; }
+    .plan-name { font-size: 19px; font-weight: 800; margin-bottom: 6px; }
+    .name-b { color: #64748b; } .name-a { color: var(--p); } .name-p { color: #6d28d9; }
+    .plan-desc { font-size: 13px; color: #888; line-height: 1.55; margin-bottom: 18px; }
+    .plan-price { font-size: 34px; font-weight: 800; }
+    .plan-price span { font-size: 14px; font-weight: 400; color: #aaa; }
+    .plan-note { font-size: 12px; color: #bbb; margin-top: 3px; }
+    .plan-div { height: 1px; background: #f0ece6; margin: 0 24px; }
+    .plan-feats { padding: 20px 24px 24px; display: flex; flex-direction: column; gap: 10px; }
+    .pf { display: flex; align-items: flex-start; gap: 9px; font-size: 13px; color: #444; line-height: 1.45; }
+    .pf-ic { flex-shrink: 0; width: 19px; height: 19px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; margin-top: 1px; }
+    .ic-b { background: #f1f5f9; color: #64748b; }
+    .ic-a { background: var(--pl); color: var(--p); }
+    .ic-p { background: #ede9fe; color: #6d28d9; }
+    .pf small { display: block; font-size: 11px; color: #aaa; margin-top: 1px; }
+    .new-tag { background: #fff7ed; color: #c2410c; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 6px; margin-left: 5px; }
+    .plan-cta-wrap { padding: 0 24px 24px; }
+    .plan-btn { display: block; text-align: center; padding: 12px; border-radius: 9px; font-weight: 700; font-size: 14px; text-decoration: none; }
+    .btn-b { background: #f1f5f9; color: #64748b; }
+    .btn-a { background: var(--p); color: white; }
+    .btn-p { background: #6d28d9; color: white; }
 
     /* CTA */
     .cta {
@@ -124,6 +139,10 @@
     footer { background: #2a2218; color: #777; padding: 26px 20px; text-align: center; font-size: 13px; }
     footer strong { color: var(--a); }
 
+    @media (max-width: 860px) {
+      .plans { grid-template-columns: 1fr; }
+      .plan.featured { transform: none; }
+    }
     @media (max-width: 680px) {
       nav { padding: 12px 16px; }
       .demo-inner { grid-template-columns: 1fr; }
@@ -248,23 +267,75 @@
   </div>
 </section>
 
-<!-- PRICING -->
-<section class="pricing">
-  <div class="sec-label">Chi phí</div>
-  <div class="sec-title">Hoàn toàn miễn phí</div>
-  <div class="price-card">
-    <div class="price-badge">Hiện tại</div>
-    <div class="price-val">0đ <span>/tháng</span></div>
-    <div class="price-sub">Không cần thẻ tín dụng · Không hợp đồng</div>
-    <ul class="price-list">
-      <li>Bot Zalo nhận đặt lịch 24/7</li>
-      <li>Tự động nhắc lịch hẹn</li>
-      <li>Lịch sử dịch vụ khách hàng</li>
-      <li>Gửi khuyến mãi tự động</li>
-      <li>Trang admin quản lý lịch</li>
-      <li>Hỗ trợ setup tận nơi</li>
-    </ul>
-    <a href="#contact" class="price-cta">Đăng ký miễn phí ngay →</a>
+<!-- PLANS -->
+<section class="plans-sec" id="plans">
+  <div class="sec-label">Gói dịch vụ</div>
+  <div class="sec-title">Chọn gói phù hợp với spa</div>
+
+  <div class="plans">
+
+    <!-- BOT CƠ BẢN -->
+    <div class="plan">
+      <div class="plan-head">
+        <div class="plan-badge badge-b">🤖 Bot cơ bản</div>
+        <div class="plan-name name-b">Bot Tự Động</div>
+        <div class="plan-desc">Nhận lịch hẹn, nhắc khách theo menu. Phù hợp spa mới bắt đầu.</div>
+        <div class="plan-price">0đ <span>/tháng</span></div>
+        <div class="plan-note">Miễn phí hoàn toàn</div>
+      </div>
+      <div class="plan-div"></div>
+      <div class="plan-feats">
+        <div class="pf"><div class="pf-ic ic-b">✓</div><div>Khách chọn dịch vụ qua nút bấm<small>Menu cố định, dễ dùng</small></div></div>
+        <div class="pf"><div class="pf-ic ic-b">✓</div><div>Đặt lịch theo khung giờ có sẵn<small>09:30 – 22:00, bước 30 phút</small></div></div>
+        <div class="pf"><div class="pf-ic ic-b">✓</div><div>Nhắc lịch tự động trước 2 tiếng</div></div>
+        <div class="pf"><div class="pf-ic ic-b">✓</div><div>Trang admin quản lý lịch hẹn</div></div>
+        <div class="pf"><div class="pf-ic ic-b">✓</div><div>Hoạt động trên Zalo</div></div>
+      </div>
+      <div class="plan-cta-wrap"><a href="#contact" class="plan-btn btn-b">Dùng miễn phí →</a></div>
+    </div>
+
+    <!-- BOT AI -->
+    <div class="plan featured">
+      <div class="plan-head">
+        <div class="plan-badge badge-a">✨ Phổ biến nhất</div>
+        <div class="plan-name name-a">Bot AI</div>
+        <div class="plan-desc">AI hiểu tin nhắn tự nhiên, tư vấn dịch vụ thông minh theo nhu cầu từng khách.</div>
+        <div class="plan-price">0đ <span>/tháng</span></div>
+        <div class="plan-note">Miễn phí trong giai đoạn ra mắt</div>
+      </div>
+      <div class="plan-div"></div>
+      <div class="plan-feats">
+        <div class="pf"><div class="pf-ic ic-a">✓</div><div>Tất cả tính năng Bot cơ bản</div></div>
+        <div class="pf"><div class="pf-ic ic-a">✦</div><div>AI hiểu ngôn ngữ tự nhiên <span class="new-tag">AI</span><small>Khách nhắn bất kỳ, bot vẫn hiểu</small></div></div>
+        <div class="pf"><div class="pf-ic ic-a">✦</div><div>Gợi ý dịch vụ phù hợp <span class="new-tag">AI</span><small>Dựa theo nhu cầu và lịch sử khách</small></div></div>
+        <div class="pf"><div class="pf-ic ic-a">✓</div><div>Lịch sử dịch vụ đã dùng<small>Khách xem lại trong chat</small></div></div>
+        <div class="pf"><div class="pf-ic ic-a">✓</div><div>Gửi khuyến mãi cho khách quen<small>Sinh nhật, lễ tết, chương trình mới</small></div></div>
+        <div class="pf"><div class="pf-ic ic-a">✓</div><div>Zalo + Telegram</div></div>
+      </div>
+      <div class="plan-cta-wrap"><a href="#contact" class="plan-btn btn-a">Đăng ký ngay →</a></div>
+    </div>
+
+    <!-- BOT AI PRO -->
+    <div class="plan pro">
+      <div class="plan-head">
+        <div class="plan-badge badge-p">🚀 Xịn nhất</div>
+        <div class="plan-name name-p">Bot AI Pro</div>
+        <div class="plan-desc">Trợ lý AI toàn diện — phân tích khách, tự động marketing, báo cáo doanh thu.</div>
+        <div class="plan-price">0đ <span>/tháng</span></div>
+        <div class="plan-note">Miễn phí trong giai đoạn ra mắt</div>
+      </div>
+      <div class="plan-div"></div>
+      <div class="plan-feats">
+        <div class="pf"><div class="pf-ic ic-p">✓</div><div>Tất cả tính năng Bot AI</div></div>
+        <div class="pf"><div class="pf-ic ic-p">🧠</div><div>Phân tích hành vi khách hàng <span class="new-tag">PRO</span><small>Biết khách nào sắp rời bỏ để giữ chân</small></div></div>
+        <div class="pf"><div class="pf-ic ic-p">📊</div><div>Báo cáo doanh thu tự động <span class="new-tag">PRO</span><small>Thống kê ngày/tuần/tháng realtime</small></div></div>
+        <div class="pf"><div class="pf-ic ic-p">🎯</div><div>Remarketing khách lâu không quay lại <span class="new-tag">PRO</span></div></div>
+        <div class="pf"><div class="pf-ic ic-p">⭐</div><div>Thu thập đánh giá sau dịch vụ <span class="new-tag">PRO</span></div></div>
+        <div class="pf"><div class="pf-ic ic-p">👑</div><div>Dashboard VIP quản lý toàn diện <span class="new-tag">PRO</span></div></div>
+      </div>
+      <div class="plan-cta-wrap"><a href="#contact" class="plan-btn btn-p">Tôi muốn gói này →</a></div>
+    </div>
+
   </div>
 </section>
 
