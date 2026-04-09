@@ -32,7 +32,7 @@ async function askClaude(userId, firstName, username, userMessage) {
   const systemPrompt = await buildSystemPrompt();
 
   const response = await claude.messages.create({
-    model: 'claude-sonnet-4-6',
+    model: 'claude-haiku-4-5-20251001',
     max_tokens: 1024,
     system: systemPrompt,
     messages: conv.messages.map(m => ({ role: m.role, content: m.content })),

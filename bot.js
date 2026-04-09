@@ -52,7 +52,7 @@ async function askClaude(userId, firstName, username, userMessage) {
   const systemPrompt = `Bạn là trợ lý tư vấn thuê nhà tên "Nhà trọ quận 3". Hỗ trợ khách tìm phòng trọ, tư vấn hợp đồng, giải đáp thắc mắc.\n\nDanh sách phòng:\n${roomList}\n\nLiên hệ: 0901 234 567 (8:00-20:00)\n\nTrả lời ngắn gọn, thân thiện bằng tiếng Việt.`;
 
   const response = await claude.messages.create({
-    model: 'claude-sonnet-4-6',
+    model: 'claude-haiku-4-5-20251001',
     max_tokens: 1024,
     system: systemPrompt,
     messages: conv.messages.map(m => ({ role: m.role, content: m.content })),
