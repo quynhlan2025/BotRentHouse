@@ -168,17 +168,22 @@ const billState = {};
 
 // Xử lý tin nhắn
 async function handleZaloMessage(event) {
-  const userId = event.callback_query?.from?.id || event.message?.from?.id || event.sender?.id;
+  // Zalo OA event: sender.id cho text/image, follower.id cho follow event
+  const userId = event.sender?.id || event.follower?.id;
   const profile = {
-    displayName: event.message?.from?.first_name || event.sender?.display_name || event.sender?.name || '',
-    avatar:      event.sender?.avatar || event.message?.from?.avatar || '',
-    phone:       event.sender?.phone  || event.message?.from?.phone  || '',
+    displayName: event.sender?.display_name || '',
+    avatar:      event.sender?.avatar || '',
+    phone:       event.sender?.phone  || '',
   };
-  const callbackData = event.callback_query?.data || '';
   const text   = (event.message?.text || '').trim();
-  const action = callbackData || text;
+  const action = text;
 
   if (!userId) return;
+
+  // Follow event → gửi chào mừng
+  if (event.event_name === 'follow') {
+    return sendWithMenu(userId, 'Xin chào! 👋 Cảm ơn bạn đã quan tâm đến Nhà trọ quận 3.\nTôi có thể giúp gì cho bạn?', profile);
+  }
 
   // Lưu tin nhắn của user
   if (text) await saveMessage(userId, profile, 'user', text);
@@ -187,59 +192,9 @@ async function handleZaloMessage(event) {
   const conv = await ZaloConversation.findOne({ zaloUserId: userId });
   if (conv?.takenOver) return;
 
-  if (action === '/start' || action === 'Bắt đầu' || action === 'start') {
-    return sendWithMenu(userId, 'Xin chào! 👋 Tôi là Nhà trọ quận 3.', profile);
-  }
+  // ── TRẠNG THÁI (ưu tiên kiểm tra trước menu) ─────────────────────────────────
 
-  if (action === 'menu_danhsach' || action === '1') {
-    const rooms = await Room.find().sort({ price: 1 });
-    if (rooms.length === 0) return sendWithMenu(userId, 'Hiện chưa có phòng trọ nào.', profile);
-    await sendText(userId, `📋 Danh sách ${rooms.length} phòng trọ:`, profile);
-    for (const room of rooms) await sendRoomCard(userId, room, profile);
-    return sendWithMenu(userId, 'Bạn cần hỗ trợ thêm gì không?', profile);
-  }
-
-  if (action === 'menu_timgia' || action === '2') {
-    userState[userId] = 'waiting_price';
-    return sendText(userId, '🔍 Nhập ngân sách tối đa (đơn vị đồng)\nVí dụ: 3000000 hoặc 3tr', profile);
-  }
-
-  if (action === 'menu_lienhe' || action === '3') {
-    return sendWithMenu(userId,
-      '📞 Thông tin liên hệ\n\n👤 Chủ nhà: Nguyễn Văn A\n📱 SĐT: 0901 234 567\n🕐 Giờ làm việc: 8:00 - 20:00',
-      profile
-    );
-  }
-
-  if (action === 'menu_gioithieu' || action === '4') {
-    const total     = await Room.countDocuments();
-    const available = await Room.countDocuments({ status: 'available' });
-    return sendWithMenu(userId,
-      `🏠 Giới thiệu\n\nChúng tôi cho thuê phòng trọ tại TP.HCM.\n\n📊 Tổng phòng: ${total}\n✅ Còn trống: ${available}\n\nLiên hệ ngay để được tư vấn!`,
-      profile
-    );
-  }
-
-  // ── BƯỚC 1: Kích hoạt báo sự cố → gửi template ──────────────────────────────
-  if (action === 'menu_suachua' || action === '5' || /báo sự cố|sửa chữa|hỏng|bị hỏng|bị hư/i.test(action)) {
-    maintenanceState[userId] = { step: 'waiting_form' };
-    return sendText(userId,
-      '🔧 Báo sự cố / Yêu cầu sửa chữa\n\n' +
-      'Copy mẫu bên dưới, điền và gửi lại:\n\n' +
-      '━━━━━━━━━━━━━━━\n' +
-      'Phòng: [số phòng]\n' +
-      'Sự cố: [mô tả vấn đề]\n' +
-      'Mức độ: [khẩn / bình thường]\n' +
-      '━━━━━━━━━━━━━━━\n\n' +
-      'Ví dụ:\n' +
-      'Phòng: 101\n' +
-      'Sự cố: Đèn phòng ngủ bị hỏng\n' +
-      'Mức độ: bình thường',
-      profile
-    );
-  }
-
-  // ── BƯỚC 2: Nhận form → parse → lưu DB → hiện 2 lựa chọn ────────────────────
+  // BƯỚC 2: Nhận form báo sự cố → parse → lưu DB
   if (maintenanceState[userId]?.step === 'waiting_form') {
     const roomMatch  = text.match(/ph[oò]ng\s*[:\-]\s*(.+)/i);
     const descMatch  = text.match(/s[ựu]\s*c[oố]\s*[:\-]\s*(.+)/i);
@@ -260,7 +215,6 @@ async function handleZaloMessage(event) {
     const level       = levelMatch ? levelMatch[1].trim() : 'bình thường';
     const isUrgent    = /khẩn|gấp|cháy|điện giật|nguy hiểm/i.test(level + description);
 
-    // Lưu DB
     const saved = await MaintenanceRequest.create({
       zaloUserId:  userId,
       displayName: profile.displayName || 'Khách hàng',
@@ -270,50 +224,34 @@ async function handleZaloMessage(event) {
       status: 'pending',
     });
 
-    // Thông báo chủ nhà qua Telegram
     await notifyLandlord(saved);
-
-    // Lưu state chờ lựa chọn
     maintenanceState[userId] = { step: 'waiting_choice', roomNumber, description, isUrgent };
 
     if (isUrgent) {
-      // Sự cố khẩn → hiện SĐT ngay + vẫn cho chọn
-      return sendText(userId,
-        '🚨 Đã ghi nhận SỰ CỐ KHẨN!\n\n' +
-        `🏠 Phòng: ${roomNumber}\n` +
-        `📋 Sự cố: ${description}\n\n` +
-        'Bạn muốn:\n' +
-        '━━━━━━━━━━━━━━━\n' +
-        '1️⃣ 📞 Liên hệ chủ nhà NGAY\n' +
-        '2️⃣ ⏳ Chờ chủ nhà xử lý\n' +
-        '━━━━━━━━━━━━━━━',
-        profile
+      return sendWithButtons(userId,
+        `🚨 Đã ghi nhận SỰ CỐ KHẨN!\n🏠 Phòng: ${roomNumber}\n📋 ${description}\n\nBạn muốn làm gì?`,
+        [
+          { title: '📞 Liên hệ chủ nhà NGAY', type: 'oa.query.hide', payload: 'contact_landlord' },
+          { title: '⏳ Chờ chủ nhà xử lý',    type: 'oa.query.hide', payload: 'wait_landlord'   },
+        ], profile
       );
     }
 
-    return sendText(userId,
-      '✅ Đã ghi nhận yêu cầu sửa chữa!\n\n' +
-      `🏠 Phòng: ${roomNumber}\n` +
-      `📋 Sự cố: ${description}\n` +
-      `⚡ Mức độ: ${level}\n\n` +
-      'Bạn muốn:\n' +
-      '━━━━━━━━━━━━━━━\n' +
-      '1️⃣ 📞 Liên hệ chủ nhà ngay\n' +
-      '2️⃣ ⏳ Để chủ nhà xử lý sau\n' +
-      '━━━━━━━━━━━━━━━',
-      profile
+    return sendWithButtons(userId,
+      `✅ Đã ghi nhận yêu cầu!\n🏠 Phòng: ${roomNumber}\n📋 ${description}\n⚡ Mức độ: ${level}\n\nBạn muốn làm gì?`,
+      [
+        { title: '📞 Liên hệ chủ nhà ngay',  type: 'oa.query.hide', payload: 'contact_landlord' },
+        { title: '⏳ Để chủ nhà xử lý sau',   type: 'oa.query.hide', payload: 'wait_landlord'   },
+      ], profile
     );
   }
 
-  // ── BƯỚC 3: Xử lý lựa chọn của khách ────────────────────────────────────────
+  // BƯỚC 3: Xử lý lựa chọn sau báo sự cố
   if (maintenanceState[userId]?.step === 'waiting_choice') {
-    const { roomNumber, description, isUrgent } = maintenanceState[userId];
+    const { isUrgent } = maintenanceState[userId];
     delete maintenanceState[userId];
 
-    const wantsContact = /^1$|liên hệ|gọi|phone|sđt/i.test(action);
-    const wantsWait    = /^2$|chờ|để|sau/i.test(action);
-
-    if (wantsContact) {
+    if (action === 'contact_landlord' || /liên hệ|gọi|phone|sđt/i.test(action)) {
       return sendText(userId,
         `📞 Thông tin liên hệ chủ nhà:\n\n` +
         `👤 ${LANDLORD_NAME}\n` +
@@ -324,7 +262,7 @@ async function handleZaloMessage(event) {
       );
     }
 
-    if (wantsWait) {
+    if (action === 'wait_landlord' || /chờ|để|sau/i.test(action)) {
       return sendText(userId,
         '⏳ Đã ghi nhận!\n\n' +
         'Chủ nhà đã nhận thông báo và sẽ liên hệ bạn sớm nhất.\n\n' +
@@ -334,30 +272,29 @@ async function handleZaloMessage(event) {
       );
     }
 
-    // Nếu nhắn lung tung → nhắc lại
-    return sendText(userId,
-      'Vui lòng chọn:\n' +
-      '1️⃣ 📞 Liên hệ chủ nhà ngay\n' +
-      '2️⃣ ⏳ Để chủ nhà xử lý sau',
-      profile
+    // Nhắn lung tung → nhắc lại
+    maintenanceState[userId] = { step: 'waiting_choice', isUrgent };
+    return sendWithButtons(userId,
+      'Bạn muốn làm gì?',
+      [
+        { title: '📞 Liên hệ chủ nhà ngay', type: 'oa.query.hide', payload: 'contact_landlord' },
+        { title: '⏳ Để chủ nhà xử lý sau',  type: 'oa.query.hide', payload: 'wait_landlord'   },
+      ], profile
     );
   }
 
-  // ── XEM HÓA ĐƠN ─────────────────────────────────────────────────────────────
-  if (action === '6' || /xem hóa đơn|tiền phòng|hóa đơn|bill/i.test(action)) {
-    billState[userId] = { step: 'waiting_room' };
-    return sendText(userId,
-      '💰 Xem hóa đơn tiền phòng\n\nBạn ở phòng số mấy?\n(Nhắn số phòng, ví dụ: 101)',
-      profile
-    );
-  }
-
+  // XEM HÓA ĐƠN – bước 2: đợi số phòng
   if (billState[userId]?.step === 'waiting_room') {
     delete billState[userId];
-    const roomNumber = text.trim();
+    const roomNumber = text;
     const now   = new Date();
     const month = now.getMonth() + 1;
     const year  = now.getFullYear();
+
+    if (!roomNumber) {
+      billState[userId] = { step: 'waiting_room' };
+      return sendText(userId, '⚠️ Vui lòng nhắn số phòng của bạn (ví dụ: 101)', profile);
+    }
 
     const bill = await RoomBill.findOne({ roomNumber, month, year });
 
@@ -370,9 +307,9 @@ async function handleZaloMessage(event) {
       );
     }
 
-    const fmt  = n => (+n || 0).toLocaleString('vi-VN');
-    const eUsed = Math.max(0, bill.electricEnd - bill.electricStart);
-    const wUsed = Math.max(0, bill.waterEnd    - bill.waterStart);
+    const fmt     = n => (+n || 0).toLocaleString('vi-VN');
+    const eUsed   = Math.max(0, bill.electricEnd - bill.electricStart);
+    const wUsed   = Math.max(0, bill.waterEnd    - bill.waterStart);
     const statusText = bill.status === 'paid' ? '✅ Đã thanh toán' : '⏳ Chưa thanh toán';
 
     return sendText(userId,
@@ -395,6 +332,7 @@ async function handleZaloMessage(event) {
     );
   }
 
+  // TÌM PHÒNG THEO GIÁ – bước 2: đợi nhập giá
   if (userState[userId] === 'waiting_price') {
     delete userState[userId];
     const normalized = text.replace(/tr$/i, '000000').replace(/[.,\s]/g, '');
@@ -414,7 +352,61 @@ async function handleZaloMessage(event) {
     return sendWithMenu(userId, 'Bạn cần hỗ trợ thêm gì không?', profile);
   }
 
-  // Không khớp menu → gọi Claude AI trả lời tự nhiên
+  // ── MENU CHÍNH ────────────────────────────────────────────────────────────────
+
+  if (action === '/start' || action === 'start' || action === 'Bắt đầu' || !action) {
+    return sendWithMenu(userId, 'Xin chào! 👋 Tôi là trợ lý ảo Nhà trọ quận 3.\nChọn mục bạn cần:', profile);
+  }
+
+  if (action === '1') {
+    const rooms = await Room.find().sort({ price: 1 });
+    if (rooms.length === 0) return sendWithMenu(userId, 'Hiện chưa có phòng trọ nào.', profile);
+    await sendText(userId, `📋 Danh sách ${rooms.length} phòng trọ:`, profile);
+    for (const room of rooms) await sendRoomCard(userId, room, profile);
+    return sendWithMenu(userId, 'Bạn cần hỗ trợ thêm gì không?', profile);
+  }
+
+  if (action === '2') {
+    userState[userId] = 'waiting_price';
+    return sendText(userId, '🔍 Nhập ngân sách tối đa (đơn vị đồng)\nVí dụ: 3000000 hoặc 3tr', profile);
+  }
+
+  if (action === '3') {
+    return sendWithMenu(userId,
+      `📞 Thông tin liên hệ\n\n👤 Chủ nhà: ${LANDLORD_NAME}\n📱 SĐT: ${LANDLORD_PHONE}\n🕐 Giờ làm việc: ${LANDLORD_HOURS}`,
+      profile
+    );
+  }
+
+  // BƯỚC 1: Kích hoạt báo sự cố
+  if (action === '5' || /báo sự cố|sửa chữa|hỏng|bị hỏng|bị hư/i.test(action)) {
+    maintenanceState[userId] = { step: 'waiting_form' };
+    return sendText(userId,
+      '🔧 Báo sự cố / Yêu cầu sửa chữa\n\n' +
+      'Copy mẫu bên dưới, điền và gửi lại:\n\n' +
+      '━━━━━━━━━━━━━━━\n' +
+      'Phòng: [số phòng]\n' +
+      'Sự cố: [mô tả vấn đề]\n' +
+      'Mức độ: [khẩn / bình thường]\n' +
+      '━━━━━━━━━━━━━━━\n\n' +
+      'Ví dụ:\n' +
+      'Phòng: 101\n' +
+      'Sự cố: Đèn phòng ngủ bị hỏng\n' +
+      'Mức độ: bình thường',
+      profile
+    );
+  }
+
+  // BƯỚC 1: Kích hoạt xem hóa đơn
+  if (action === '6' || /xem hóa đơn|tiền phòng|hóa đơn|bill/i.test(action)) {
+    billState[userId] = { step: 'waiting_room' };
+    return sendText(userId,
+      '💰 Xem hóa đơn tiền phòng\n\nBạn ở phòng số mấy?\n(Nhắn số phòng, ví dụ: 101)',
+      profile
+    );
+  }
+
+  // Không khớp → gọi Claude AI trả lời tự nhiên
   try {
     const aiReply = await askClaude(userId, profile.displayName, '', text);
     return sendText(userId, aiReply, profile);

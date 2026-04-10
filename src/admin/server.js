@@ -9,6 +9,7 @@ const ZaloConversation = require('../models/ZaloConversation');
 const MaintenanceRequest = require('../models/MaintenanceRequest');
 const RoomBill = require('../models/RoomBill');
 const { handleZaloMessage, sendBillToTenant } = require('../zalo/zaloBot');
+const { handleSpaBotMessage, broadcastPromo } = require('../zalo/zalaSpaBot');
 
 const app = express();
 app.use(express.json());
@@ -37,7 +38,7 @@ const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 },
 });
 
-// Zalo webhook
+// ── ZALO WEBHOOK — Bot nhà trọ ──────────────────────────────────────────────
 app.get('/zalo/webhook', (req, res) => {
   res.json({ error: 0, data: req.query });
 });
@@ -45,9 +46,21 @@ app.get('/zalo/webhook', (req, res) => {
 app.post('/zalo/webhook', async (req, res) => {
   res.json({ ok: true });
   const event = req.body;
-  console.log('Zalo event:', JSON.stringify(event));
-  if (event.message || event.callback_query) {
-    handleZaloMessage(event).catch(err => console.error('Zalo error:', err.message));
+  if (event.message || event.event_name === 'follow') {
+    handleZaloMessage(event).catch(err => console.error('Zalo renthouse error:', err.message));
+  }
+});
+
+// ── ZALO WEBHOOK — Bot spa ───────────────────────────────────────────────────
+app.get('/zalo/spa-webhook', (req, res) => {
+  res.json({ error: 0, data: req.query });
+});
+
+app.post('/zalo/spa-webhook', async (req, res) => {
+  res.json({ ok: true });
+  const event = req.body;
+  if (event.message || event.event_name === 'follow') {
+    handleSpaBotMessage(event).catch(err => console.error('Zalo spa error:', err.message));
   }
 });
 
@@ -56,6 +69,39 @@ app.get('/', (req, res) => res.render('landing'));
 
 // Spa landing page
 app.get('/spa', (req, res) => res.render('spa-landing'));
+
+// Spa AI product landing page
+app.get('/spa-ai', (req, res) => res.render('spa-ai-landing'));
+
+// Broadcast ưu đãi đến toàn bộ khách spa (gọi từ spa-admin)
+app.post('/spa-admin/broadcast', async (req, res) => {
+  const { message } = req.body;
+  if (!message) return res.json({ ok: false, error: 'Thiếu nội dung' });
+  try {
+    const sent = await broadcastPromo(message);
+    res.redirect(`/spa-admin?msg=Đã gửi ưu đãi đến ${sent} khách!&type=success`);
+  } catch (err) {
+    res.redirect(`/spa-admin?msg=Lỗi gửi broadcast: ${err.message}&type=error`);
+  }
+});
+
+// API nhận đăng ký dùng thử từ spa-ai landing
+app.post('/api/spa-register', async (req, res) => {
+  const { name, phone, spa, city } = req.body;
+  res.json({ ok: true });
+  // Thông báo Telegram cho admin
+  const token  = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.LANDLORD_TELEGRAM_ID;
+  if (token && chatId) {
+    const msg =
+      `🌸 ĐĂNG KÝ DÙNG THỬ SPA AI\n\n` +
+      `👤 ${name}\n📞 ${phone}\n🏪 ${spa}\n📍 ${city || '—'}\n` +
+      `🕐 ${new Date().toLocaleString('vi-VN')}`;
+    require('axios').post(`https://api.telegram.org/bot${token}/sendMessage`, {
+      chat_id: chatId, text: msg,
+    }).catch(() => {});
+  }
+});
 
 // Bots comparison landing page
 app.get('/bots', (req, res) => res.render('bots-landing'));

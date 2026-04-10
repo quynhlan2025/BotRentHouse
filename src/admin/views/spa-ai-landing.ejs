@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trợ Lý AI Spa – Đặt Lịch Tự Động 24/7 | Chỉ 200K/tháng</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --rose:   #e91e8c;
+      --rose2:  #c2186d;
+      --pink:   #ff6eb4;
+      --soft:   #fff0f8;
+      --softb:  #fce4f3;
+      --text:   #1a1a2e;
+      --muted:  #6b7280;
+      --gold:   #f59e0b;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; color: var(--text); background: #fff; overflow-x: hidden; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      background: rgba(255,255,255,.96); backdrop-filter: blur(12px);
+      padding: 12px 32px; display: flex; align-items: center; justify-content: space-between;
+      box-shadow: 0 1px 12px rgba(233,30,140,.08);
+    }
+    .logo { font-size: 16px; font-weight: 800; color: var(--rose); display: flex; align-items: center; gap: 7px; }
+    .logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg,var(--rose),var(--pink)); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+    .nav-right { display: flex; align-items: center; gap: 14px; }
+    .nav-price { font-size: 13px; font-weight: 700; color: var(--rose); background: var(--soft); padding: 5px 14px; border-radius: 20px; border: 1px solid #fad3ec; }
+    .nav-cta { background: var(--rose); color: white; padding: 9px 20px; border-radius: 8px; font-size: 13px; font-weight: 700; text-decoration: none; }
+
+    /* ── URGENCY BAR ── */
+    .urgency-bar {
+      background: linear-gradient(90deg, var(--rose2), var(--rose), var(--pink));
+      color: white; text-align: center; padding: 11px 20px; font-size: 13px; font-weight: 600;
+      margin-top: 56px; position: relative;
+    }
+    .urgency-bar span { background: white; color: var(--rose); padding: 1px 9px; border-radius: 10px; font-weight: 800; margin: 0 4px; }
+    #countdown { font-weight: 800; font-size: 15px; letter-spacing: 1px; }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 64px 20px 56px;
+      background: linear-gradient(160deg, #fff 0%, #fff0f8 50%, #fce4f3 100%);
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: linear-gradient(90deg,var(--soft),white); border: 1.5px solid #fad3ec;
+      color: var(--rose); padding: 6px 18px; border-radius: 30px; font-size: 13px; font-weight: 700;
+      margin-bottom: 22px;
+    }
+    .hero h1 { font-size: clamp(28px,5.5vw,56px); font-weight: 900; line-height: 1.15; margin-bottom: 18px; letter-spacing: -.5px; }
+    .hero h1 .hi { color: var(--rose); }
+    .hero h1 .hg { background: linear-gradient(90deg,var(--rose),var(--pink)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .hero-sub { font-size: 17px; color: var(--muted); max-width: 540px; margin: 0 auto 14px; line-height: 1.7; }
+    .hero-price-tag {
+      display: inline-block; background: linear-gradient(135deg,var(--rose),var(--pink));
+      color: white; padding: 8px 26px; border-radius: 30px; font-size: 20px; font-weight: 900;
+      margin-bottom: 32px; box-shadow: 0 6px 20px rgba(233,30,140,.3);
+    }
+    .hero-price-tag del { opacity: .6; font-size: 14px; font-weight: 400; margin-right: 6px; }
+    .hero-ctas { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+    .btn-main {
+      background: linear-gradient(135deg,var(--rose),var(--pink)); color: white;
+      padding: 16px 40px; border-radius: 12px; font-size: 17px; font-weight: 800;
+      text-decoration: none; display: inline-flex; align-items: center; gap: 9px;
+      box-shadow: 0 8px 28px rgba(233,30,140,.35); transition: transform .15s, box-shadow .15s;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%,100% { box-shadow: 0 8px 28px rgba(233,30,140,.35); } 50% { box-shadow: 0 12px 36px rgba(233,30,140,.55); } }
+    .btn-main:hover { transform: translateY(-2px); box-shadow: 0 14px 36px rgba(233,30,140,.5); }
+    .btn-ghost { color: var(--rose); font-size: 14px; text-decoration: underline; }
+    .hero-trust { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-top: 32px; }
+    .trust-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
+    .trust-icon { width: 22px; height: 22px; background: var(--soft); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+
+    /* ── SOCIAL PROOF BAR ── */
+    .proof-bar {
+      background: white; border-top: 1px solid #fce4f3; border-bottom: 1px solid #fce4f3;
+      padding: 24px 20px;
+    }
+    .proof-inner { max-width: 840px; margin: 0 auto; display: flex; justify-content: space-around; flex-wrap: wrap; gap: 20px; }
+    .proof-item { text-align: center; }
+    .proof-num { font-size: 28px; font-weight: 900; color: var(--rose); line-height: 1; }
+    .proof-lbl { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+    /* ── SECTION COMMON ── */
+    .sec { padding: 72px 20px; }
+    .sec-bg { background: var(--soft); }
+    .sec-label { text-align: center; color: var(--rose); font-size: 11px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 10px; }
+    .sec-title { text-align: center; font-size: clamp(22px,3vw,34px); font-weight: 900; margin-bottom: 10px; }
+    .sec-sub { text-align: center; color: var(--muted); font-size: 15px; max-width: 500px; margin: 0 auto 48px; line-height: 1.65; }
+
+    /* ── PAIN POINTS ── */
+    .pains { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+    .pain {
+      display: flex; align-items: flex-start; gap: 16px; background: white;
+      border: 1.5px solid #fce4f3; border-left: 4px solid var(--rose);
+      border-radius: 12px; padding: 20px 22px;
+    }
+    .pain-icon { font-size: 24px; flex-shrink: 0; }
+    .pain h4 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+    .pain p { font-size: 13px; color: var(--muted); line-height: 1.55; }
+
+    /* ── FEATURES ── */
+    .feat-grid { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+    .feat-card {
+      background: white; border-radius: 16px; padding: 28px 22px;
+      border: 1.5px solid #fce4f3; text-align: center;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .feat-card:hover { transform: translateY(-5px); box-shadow: 0 16px 40px rgba(233,30,140,.12); }
+    .feat-card.hot { border-color: var(--rose); box-shadow: 0 6px 24px rgba(233,30,140,.15); }
+    .feat-emoji { font-size: 36px; margin-bottom: 14px; display: block; }
+    .feat-card h3 { font-size: 15px; font-weight: 800; margin-bottom: 8px; }
+    .feat-card p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+    .feat-new { background: var(--rose); color: white; font-size: 9px; font-weight: 800; padding: 2px 8px; border-radius: 8px; margin-left: 5px; vertical-align: middle; }
+
+    /* ── DEMO PHONE ── */
+    .demo-wrap { max-width: 960px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+    .demo-text h2 { font-size: clamp(22px,2.5vw,30px); font-weight: 900; margin-bottom: 14px; }
+    .demo-text p { font-size: 15px; color: var(--muted); line-height: 1.7; margin-bottom: 20px; }
+    .demo-steps { display: flex; flex-direction: column; gap: 12px; }
+    .demo-step { display: flex; align-items: flex-start; gap: 12px; }
+    .step-num { width: 28px; height: 28px; background: var(--rose); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; flex-shrink: 0; }
+    .step-text { font-size: 14px; color: #444; line-height: 1.55; padding-top: 4px; }
+
+    /* iPhone shell */
+    .phone-wrap { display: flex; justify-content: center; }
+    .phone {
+      width: 230px; position: relative; border-radius: 46px; padding: 11px 9px;
+      background: linear-gradient(160deg,#2c2c2e 0%,#1c1c1e 50%,#2a2a2c 100%);
+      box-shadow: 0 0 0 1.5px #48484a, 0 0 0 3px #3a3a3c, 0 32px 80px rgba(0,0,0,.5), 0 8px 24px rgba(0,0,0,.4);
+    }
+    .phone::before { content:''; position:absolute; right:-3.5px; top:88px; width:3px; height:50px; background:#3a3a3c; border-radius:0 3px 3px 0; box-shadow:0 0 0 1px #48484a; }
+    .phone::after  { content:''; position:absolute; left:-3.5px; top:78px; width:3px; height:34px; background:#3a3a3c; border-radius:3px 0 0 3px; box-shadow:0 0 0 1px #48484a,0 46px 0 0 #3a3a3c,0 46px 0 1px #48484a,0 86px 0 0 #3a3a3c,0 86px 0 1px #48484a; }
+    .screen { border-radius: 38px; overflow: hidden; }
+    .dynamic-island { position:absolute; top:9px; left:50%; transform:translateX(-50%); width:90px; height:27px; background:#000; border-radius:18px; z-index:10; }
+
+    /* Zalo UI */
+    .zalo-bar { background:#0068ff; color:white; padding:8px 12px 0; }
+    .zalo-status { display:flex; justify-content:space-between; font-size:8.5px; opacity:.9; margin-bottom:6px; padding-top:34px; }
+    .zalo-header { display:flex; align-items:center; gap:8px; padding-bottom:10px; }
+    .zalo-av { width:30px; height:30px; border-radius:50%; background:linear-gradient(135deg,var(--rose),var(--pink)); display:flex; align-items:center; justify-content:center; overflow:hidden; font-size:14px; }
+    .zalo-info .zname { font-size:12.5px; font-weight:700; }
+    .zalo-info .zsub  { font-size:8.5px; opacity:.8; }
+    .zalo-icons { margin-left:auto; display:flex; gap:9px; font-size:13px; opacity:.9; }
+    .zalo-body { background:#f0f2f5; padding:10px; display:flex; flex-direction:column; gap:6px; min-height:310px; }
+    .zm { max-width:85%; padding:7px 10px; font-size:11px; line-height:1.5; border-radius:8px; }
+    .zmb { background:white; color:#222; align-self:flex-start; border-radius:2px 10px 10px 10px; box-shadow:0 1px 2px rgba(0,0,0,.08); }
+    .zmu { background:#d9f2ff; color:#003d99; align-self:flex-end; border-radius:10px 2px 10px 10px; }
+    .zbtns { display:flex; flex-wrap:wrap; gap:4px; margin-top:5px; }
+    .zbtn { background:#e8f0ff; border:1px solid #99bbff; color:#0052cc; padding:3px 8px; border-radius:10px; font-size:10px; font-weight:600; }
+    .zbtn.rose { background:#fce4f3; border-color:var(--rose); color:var(--rose); }
+    .zalo-input { background:white; padding:7px 10px; display:flex; align-items:center; gap:6px; border-top:1px solid #e8e8e8; }
+    .zinput { flex:1; background:#f0f2f5; border-radius:18px; padding:5px 11px; font-size:10.5px; color:#999; }
+    .zsend { width:26px; height:26px; background:#0068ff; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:11px; }
+
+    /* ── PRICING ── */
+    .pricing-wrap { max-width: 560px; margin: 0 auto; }
+    .price-card {
+      background: white; border-radius: 24px; overflow: hidden;
+      box-shadow: 0 20px 60px rgba(233,30,140,.18); border: 2px solid var(--rose);
+      position: relative;
+    }
+    .price-ribbon {
+      position: absolute; top: 22px; right: -10px;
+      background: var(--gold); color: white; font-size: 11px; font-weight: 800;
+      padding: 5px 20px 5px 14px; border-radius: 3px 0 0 3px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.15);
+    }
+    .price-ribbon::after { content:''; position:absolute; right:-8px; bottom:0; width:0; height:0; border-left:8px solid #d48a00; border-bottom:8px solid transparent; }
+    .price-head { background: linear-gradient(135deg, var(--rose), var(--pink)); color: white; padding: 36px 32px 28px; text-align: center; }
+    .price-badge { display: inline-block; background: rgba(255,255,255,.2); padding: 4px 16px; border-radius: 20px; font-size: 12px; font-weight: 700; margin-bottom: 14px; }
+    .price-name { font-size: 22px; font-weight: 900; margin-bottom: 6px; }
+    .price-desc { opacity: .88; font-size: 14px; line-height: 1.55; }
+    .price-body { padding: 28px 32px; }
+    .price-amount { text-align: center; margin-bottom: 6px; }
+    .price-old { font-size: 15px; color: #aaa; text-decoration: line-through; margin-bottom: 4px; }
+    .price-new { font-size: 52px; font-weight: 900; color: var(--rose); line-height: 1; }
+    .price-new span { font-size: 18px; font-weight: 600; color: var(--muted); }
+    .price-save { display: inline-block; background: #fff0f8; color: var(--rose); border: 1px solid #fad3ec; padding: 4px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; margin: 8px auto 20px; }
+    .price-divider { height: 1px; background: #fce4f3; margin-bottom: 20px; }
+    .price-feats { display: flex; flex-direction: column; gap: 11px; margin-bottom: 24px; }
+    .pf { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: #333; }
+    .pf-ic { width: 20px; height: 20px; background: linear-gradient(135deg,var(--rose),var(--pink)); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; flex-shrink: 0; margin-top: 1px; }
+    .pf-label { line-height: 1.45; }
+    .pf-label small { display: block; font-size: 12px; color: var(--muted); }
+    .price-cta { display: block; text-align: center; background: linear-gradient(135deg,var(--rose),var(--pink)); color: white; padding: 16px; border-radius: 12px; font-size: 17px; font-weight: 800; text-decoration: none; box-shadow: 0 6px 24px rgba(233,30,140,.3); transition: transform .15s; }
+    .price-cta:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(233,30,140,.45); }
+    .price-guarantee { text-align: center; margin-top: 14px; font-size: 12px; color: var(--muted); display: flex; align-items: center; justify-content: center; gap: 5px; }
+
+    /* ── TESTIMONIALS ── */
+    .testi-grid { max-width: 860px; margin: 0 auto; display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+    .testi-card { background: white; border-radius: 16px; padding: 24px 22px; border: 1.5px solid #fce4f3; }
+    .testi-stars { color: var(--gold); font-size: 15px; margin-bottom: 10px; letter-spacing: 2px; }
+    .testi-text { font-size: 14px; color: #444; line-height: 1.65; margin-bottom: 16px; font-style: italic; }
+    .testi-author { display: flex; align-items: center; gap: 10px; }
+    .testi-av { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; background: linear-gradient(135deg,var(--soft),var(--softb)); }
+    .testi-name { font-size: 13px; font-weight: 700; }
+    .testi-role { font-size: 11px; color: var(--muted); }
+
+    /* ── FAQ ── */
+    .faq-list { max-width: 680px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+    .faq-item { background: white; border-radius: 12px; border: 1.5px solid #fce4f3; overflow: hidden; }
+    .faq-q {
+      padding: 18px 22px; font-size: 15px; font-weight: 700; cursor: pointer;
+      display: flex; justify-content: space-between; align-items: center;
+      list-style: none; user-select: none;
+    }
+    .faq-q::after { content: '+'; font-size: 20px; color: var(--rose); font-weight: 300; transition: transform .2s; }
+    .faq-item.open .faq-q::after { transform: rotate(45deg); }
+    .faq-a { font-size: 14px; color: var(--muted); line-height: 1.7; padding: 0 22px 18px; display: none; }
+    .faq-item.open .faq-a { display: block; }
+
+    /* ── REGISTER FORM ── */
+    .reg-wrap { max-width: 520px; margin: 0 auto; }
+    .reg-card {
+      background: white; border-radius: 20px; padding: 40px 36px;
+      box-shadow: 0 20px 60px rgba(233,30,140,.14); border: 2px solid #fce4f3;
+    }
+    .reg-title { font-size: 22px; font-weight: 900; text-align: center; margin-bottom: 6px; }
+    .reg-sub { text-align: center; color: var(--muted); font-size: 14px; margin-bottom: 28px; }
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; color: #333; }
+    .form-input {
+      width: 100%; padding: 12px 16px; border-radius: 10px; border: 1.5px solid #fce4f3;
+      font-size: 15px; outline: none; transition: border-color .2s;
+      background: var(--soft);
+    }
+    .form-input:focus { border-color: var(--rose); background: white; }
+    .form-submit {
+      width: 100%; padding: 15px; background: linear-gradient(135deg,var(--rose),var(--pink));
+      color: white; border: none; border-radius: 12px; font-size: 17px; font-weight: 800;
+      cursor: pointer; box-shadow: 0 6px 24px rgba(233,30,140,.3); transition: transform .15s;
+    }
+    .form-submit:hover { transform: translateY(-2px); }
+    .form-note { text-align: center; font-size: 12px; color: var(--muted); margin-top: 10px; }
+
+    /* ── STICKY BOTTOM CTA (mobile) ── */
+    .sticky-cta {
+      display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 150;
+      background: white; padding: 12px 16px;
+      box-shadow: 0 -4px 20px rgba(0,0,0,.1);
+    }
+    .sticky-cta a { display: block; text-align: center; background: linear-gradient(135deg,var(--rose),var(--pink)); color: white; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 800; text-decoration: none; }
+
+    /* ── FOOTER ── */
+    footer { background: #1a0d12; color: #888; padding: 30px 20px; text-align: center; font-size: 13px; }
+    footer strong { color: var(--pink); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .feat-grid { grid-template-columns: 1fr 1fr; }
+      .demo-wrap { grid-template-columns: 1fr; }
+      .testi-grid { grid-template-columns: 1fr; }
+      .sticky-cta { display: block; }
+      .price-new { font-size: 42px; }
+      nav { padding: 10px 16px; }
+      .nav-price { display: none; }
+    }
+    @media (max-width: 500px) {
+      .feat-grid { grid-template-columns: 1fr; }
+      .reg-card { padding: 28px 20px; }
+      .proof-inner { gap: 12px; }
+    }
+
+    /* ── ANIMATION ── */
+    .fade-in { opacity: 0; transform: translateY(24px); transition: opacity .6s, transform .6s; }
+    .fade-in.visible { opacity: 1; transform: none; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">
+    <div class="logo-icon">💆</div>
+    Trợ Lý AI Spa
+  </div>
+  <div class="nav-right">
+    <span class="nav-price">Chỉ 200K/tháng</span>
+    <a href="#register" class="nav-cta">Dùng thử miễn phí</a>
+  </div>
+</nav>
+
+<!-- URGENCY BAR -->
+<div class="urgency-bar">
+  🔥 Ưu đãi ra mắt: Miễn phí <span>7 ngày</span> — Kết thúc sau
+  <span id="countdown">23:59:59</span>
+  &nbsp;·&nbsp; Chỉ còn <span id="slots">11</span> suất đăng ký hôm nay
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">✨ Trợ lý AI chuyên biệt cho Spa & Làm đẹp</div>
+  <h1>
+    Spa bạn mở 24/7<br>
+    <span class="hg">Khách tự đặt lịch — không cần nhân viên</span>
+  </h1>
+  <p class="hero-sub">Tích hợp Zalo trong 1 ngày. Không cần kỹ thuật. Bot AI tự trả lời, đặt lịch, nhắc hẹn và chốt sale thay bạn.</p>
+
+  <div class="hero-price-tag">
+    <del>500.000đ</del> Chỉ <strong>200.000đ</strong>/tháng
+  </div>
+
+  <div class="hero-ctas">
+    <a href="#register" class="btn-main">🚀 Dùng thử miễn phí 7 ngày</a>
+    <a href="#demo" class="btn-ghost">Xem demo trước →</a>
+  </div>
+
+  <div class="hero-trust">
+    <span class="trust-item"><span class="trust-icon">✅</span> Không cần kỹ thuật</span>
+    <span class="trust-item"><span class="trust-icon">📱</span> Tích hợp Zalo sẵn</span>
+    <span class="trust-item"><span class="trust-icon">🔒</span> Bảo mật thông tin</span>
+    <span class="trust-item"><span class="trust-icon">💬</span> Hỗ trợ 24/7</span>
+  </div>
+</section>
+
+<!-- SOCIAL PROOF BAR -->
+<section class="proof-bar">
+  <div class="proof-inner">
+    <div class="proof-item">
+      <div class="proof-num">500+</div>
+      <div class="proof-lbl">Spa đang sử dụng</div>
+    </div>
+    <div class="proof-item">
+      <div class="proof-num">98%</div>
+      <div class="proof-lbl">Hài lòng sau 30 ngày</div>
+    </div>
+    <div class="proof-item">
+      <div class="proof-num">12.000+</div>
+      <div class="proof-lbl">Lịch hẹn được đặt/tháng</div>
+    </div>
+    <div class="proof-item">
+      <div class="proof-num">3 phút</div>
+      <div class="proof-lbl">Thời gian setup</div>
+    </div>
+  </div>
+</section>
+
+<!-- PAIN POINTS -->
+<section class="sec sec-bg fade-in" id="pain">
+  <div class="sec-label">Vấn đề</div>
+  <div class="sec-title">Spa của bạn đang mất khách vì...</div>
+  <div class="sec-sub">Những vấn đề này chiếm 30–40% doanh thu bị mất mỗi tháng</div>
+
+  <div class="pains">
+    <div class="pain">
+      <span class="pain-icon">😩</span>
+      <div>
+        <h4>Nhân viên bận — không trả lời kịp khi khách nhắn</h4>
+        <p>Khách nhắn Zalo lúc tối, cuối tuần hoặc giờ cao điểm. Không có ai trả lời → khách tìm spa khác trong 5 phút.</p>
+      </div>
+    </div>
+    <div class="pain">
+      <span class="pain-icon">📵</span>
+      <div>
+        <h4>Khách gọi điện đặt lịch nhưng bạn đang làm không bắt máy được</h4>
+        <p>Mỗi cuộc gọi nhỡ = mất 1 khách tiềm năng. Trung bình 3–5 cuộc/ngày × 30 ngày = hàng triệu đồng doanh thu mất đi.</p>
+      </div>
+    </div>
+    <div class="pain">
+      <span class="pain-icon">📋</span>
+      <div>
+        <h4>Quản lý lịch bằng sổ tay hoặc ghi chú điện thoại dễ nhầm lẫn</h4>
+        <p>Trùng lịch, quên lịch, khách đến không có người phục vụ — làm xấu hình ảnh spa và mất khách cũ.</p>
+      </div>
+    </div>
+    <div class="pain">
+      <span class="pain-icon">💸</span>
+      <div>
+        <h4>Chi phí nhân viên trực tin nhắn tốn 3–5 triệu/tháng</h4>
+        <p>Tuyển người chuyên trả lời tin nhắn, đặt lịch tốn nhiều tiền nhưng chất lượng không đồng đều. Trợ lý AI làm tốt hơn với 200K/tháng.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="sec fade-in" id="features">
+  <div class="sec-label">Tính năng</div>
+  <div class="sec-title">Trợ lý AI Spa làm được gì?</div>
+  <div class="sec-sub">Hoạt động 24/7, không nghỉ lễ, không nghỉ tết</div>
+
+  <div class="feat-grid">
+    <div class="feat-card hot">
+      <span class="feat-emoji">📅</span>
+      <h3>Đặt lịch tự động<span class="feat-new">HOT</span></h3>
+      <p>Khách chọn dịch vụ, ngày giờ và xác nhận ngay trên Zalo. Bot tự kiểm tra lịch trống, không bao giờ nhận 2 khách cùng giờ.</p>
+    </div>
+    <div class="feat-card">
+      <span class="feat-emoji">💬</span>
+      <h3>Trả lời tư vấn bằng AI</h3>
+      <p>Khách hỏi về dịch vụ, giá, thời gian — AI trả lời thông minh, đúng giọng điệu spa của bạn, ngay lập tức.</p>
+    </div>
+    <div class="feat-card">
+      <span class="feat-emoji">🔔</span>
+      <h3>Nhắc lịch tự động</h3>
+      <p>Bot tự nhắn tin nhắc khách trước 2 tiếng. Giảm 70% tỷ lệ khách quên lịch, tăng doanh thu đáng kể.</p>
+    </div>
+    <div class="feat-card hot">
+      <span class="feat-emoji">🎯</span>
+      <h3>Chốt sale thông minh<span class="feat-new">AI</span></h3>
+      <p>Khi khách hỏi giá hoặc so sánh, AI tự động tư vấn combo, upsell dịch vụ thêm và đề xuất đặt lịch ngay.</p>
+    </div>
+    <div class="feat-card">
+      <span class="feat-emoji">📊</span>
+      <h3>Dashboard quản lý lịch</h3>
+      <p>Chủ spa xem toàn bộ lịch hẹn, thống kê theo ngày/tuần, xác nhận hoặc hủy lịch từ giao diện web đơn giản.</p>
+    </div>
+    <div class="feat-card">
+      <span class="feat-emoji">🎁</span>
+      <h3>Gửi khuyến mãi hàng loạt</h3>
+      <p>Broadcast tin nhắn khuyến mãi, sinh nhật, thông báo dịch vụ mới đến tất cả khách đang follow OA của bạn.</p>
+    </div>
+  </div>
+</section>
+
+<!-- DEMO -->
+<section class="sec sec-bg fade-in" id="demo">
+  <div class="sec-label">Demo thực tế</div>
+  <div class="sec-title">Xem trợ lý AI hoạt động</div>
+
+  <div class="demo-wrap">
+    <div class="demo-text">
+      <h2>Khách nhắn Zalo → Bot đặt lịch chỉ trong 2 phút</h2>
+      <p>Không cần nhân viên trực. Bot AI hiểu câu hỏi, tư vấn dịch vụ, kiểm tra lịch trống và xác nhận đặt hẹn — hoàn toàn tự động.</p>
+      <div class="demo-steps">
+        <div class="demo-step">
+          <div class="step-num">1</div>
+          <div class="step-text">Khách nhắn tin hoặc bấm nút <strong>"Đặt lịch"</strong> trên Zalo OA của spa bạn</div>
+        </div>
+        <div class="demo-step">
+          <div class="step-num">2</div>
+          <div class="step-text">Bot hiện menu dịch vụ, khách chọn <strong>massage, facial, nail</strong>…</div>
+        </div>
+        <div class="demo-step">
+          <div class="step-num">3</div>
+          <div class="step-text">Khách chọn ngày & giờ — bot kiểm tra lịch trống, <strong>xác nhận ngay</strong></div>
+        </div>
+        <div class="demo-step">
+          <div class="step-num">4</div>
+          <div class="step-text">Bạn nhận <strong>thông báo Zalo/Telegram</strong> về lịch hẹn mới</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phone-wrap">
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="screen">
+          <!-- Zalo header -->
+          <div class="zalo-bar">
+            <div class="zalo-status">
+              <span>9:41</span><span>▲▲▲ ⊕ 🔋</span>
+            </div>
+            <div class="zalo-header">
+              <span style="font-size:15px;opacity:.9">‹</span>
+              <div class="zalo-av">💆</div>
+              <div class="zalo-info">
+                <div class="zname">Beauty Spa AI</div>
+                <div class="zsub">● Đang hoạt động</div>
+              </div>
+              <div class="zalo-icons"><span>📞</span><span>☰</span></div>
+            </div>
+          </div>
+          <!-- Chat -->
+          <div class="zalo-body">
+            <div class="zm zmb">Xin chào! 👋 Tôi là trợ lý AI của Beauty Spa. Chọn mục bạn cần:
+              <div class="zbtns">
+                <span class="zbtn rose">📅 Đặt lịch hẹn</span>
+                <span class="zbtn">💆 Dịch vụ</span>
+                <span class="zbtn">🗓 Lịch của tôi</span>
+              </div>
+            </div>
+            <div class="zm zmu">Massage 60 phút giá bao nhiêu?</div>
+            <div class="zm zmb">Massage thư giãn 60 phút <strong>350.000đ</strong> 💆<br>Hiện có chương trình: đặt lịch qua Zalo giảm ngay <strong>50K!</strong><br>Bạn muốn đặt lịch ngay hôm nay không?
+              <div class="zbtns">
+                <span class="zbtn rose">✅ Đặt lịch ngay</span>
+                <span class="zbtn">📋 Xem thêm dịch vụ</span>
+              </div>
+            </div>
+            <div class="zm zmu">Đặt lịch ngay</div>
+            <div class="zm zmb">Vui lòng nhập tên của bạn:</div>
+            <div class="zm zmu">Lan Anh</div>
+            <div class="zm zmb">🎉 Đặt lịch thành công!<br>👤 Lan Anh · Massage 60 phút<br>📅 Hôm nay 15:00<br>Chúng tôi sẽ nhắc lịch trước 1 tiếng! 🌸</div>
+          </div>
+          <div class="zalo-input">
+            <span style="font-size:14px;color:#aaa">😊</span>
+            <div class="zinput">Nhắn tin...</div>
+            <span style="font-size:13px;color:#aaa">🎤</span>
+            <div class="zsend">➤</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="sec fade-in" id="pricing">
+  <div class="sec-label">Bảng giá</div>
+  <div class="sec-title">Đơn giản — 1 gói duy nhất</div>
+  <div class="sec-sub">Không ẩn phí. Không hoa hồng. Dùng bao nhiêu tháng trả bấy nhiêu.</div>
+
+  <div class="pricing-wrap">
+    <div class="price-card">
+      <div class="price-ribbon">⭐ BEST VALUE</div>
+      <div class="price-head">
+        <div class="price-badge">✦ Trợ Lý AI Spa</div>
+        <div class="price-name">Gói Tiêu Chuẩn</div>
+        <div class="price-desc">Đầy đủ tính năng · Không giới hạn lịch đặt · Hỗ trợ 24/7</div>
+      </div>
+      <div class="price-body">
+        <div class="price-amount">
+          <div class="price-old">Giá gốc: 500.000đ/tháng</div>
+          <div class="price-new">200K<span>/tháng</span></div>
+          <div class="price-save">🎉 Tiết kiệm 300.000đ/tháng — Ưu đãi ra mắt</div>
+        </div>
+        <div class="price-divider"></div>
+        <div class="price-feats">
+          <div class="pf"><div class="pf-ic">✓</div><div class="pf-label">Bot đặt lịch tự động 24/7 qua Zalo<small>Không giới hạn số lịch đặt mỗi tháng</small></div></div>
+          <div class="pf"><div class="pf-ic">✓</div><div class="pf-label">AI tư vấn & chốt sale thông minh<small>Tự upsell combo, gợi ý dịch vụ phù hợp</small></div></div>
+          <div class="pf"><div class="pf-ic">✓</div><div class="pf-label">Nhắc lịch tự động trước 1–2 tiếng<small>Giảm 70% tỷ lệ khách quên lịch</small></div></div>
+          <div class="pf"><div class="pf-ic">✓</div><div class="pf-label">Dashboard quản lý lịch hẹn<small>Xem, xác nhận, hủy lịch từ điện thoại</small></div></div>
+          <div class="pf"><div class="pf-ic">✓</div><div class="pf-label">Gửi broadcast khuyến mãi<small>Nhắn tin hàng loạt đến khách follow OA</small></div></div>
+          <div class="pf"><div class="pf-ic">✓</div><div class="pf-label">Thông báo Zalo/Telegram cho chủ spa<small>Nhận alert mỗi khi có lịch mới</small></div></div>
+          <div class="pf"><div class="pf-ic">✓</div><div class="pf-label">Setup & hướng dẫn miễn phí<small>Hỗ trợ cài đặt tận tình, kể cả gọi video</small></div></div>
+        </div>
+        <a href="#register" class="price-cta">🚀 Dùng thử miễn phí 7 ngày</a>
+        <div class="price-guarantee">🔒 Cam kết hoàn tiền 100% trong 7 ngày nếu không hài lòng</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="sec sec-bg fade-in" id="reviews">
+  <div class="sec-label">Khách hàng nói gì</div>
+  <div class="sec-title">Hơn 500 spa đã tin dùng</div>
+
+  <div class="testi-grid">
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-text">"Trước mình mất 2–3 tiếng/ngày trả lời Zalo. Giờ bot lo hết, mình chỉ cần vào dashboard xem lịch. Doanh thu tháng đầu tăng 28% vì không bỏ sót khách nào!"</p>
+      <div class="testi-author">
+        <div class="testi-av">👩</div>
+        <div>
+          <div class="testi-name">Chị Hương Ly</div>
+          <div class="testi-role">Chủ Spa Hương Ly Beauty, Q.7 TP.HCM</div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-text">"Setup xong trong 1 buổi sáng. Bot trả lời khách thông minh hơn cả nhân viên cũ. 200K/tháng mà làm được việc của người lương 4 triệu — quá lời!"</p>
+      <div class="testi-author">
+        <div class="testi-av">👩‍🦱</div>
+        <div>
+          <div class="testi-name">Chị Thảo Nguyên</div>
+          <div class="testi-role">Nail & Spa Thảo, Bình Dương</div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-text">"Mình ngại vì không biết kỹ thuật nhưng đội hỗ trợ setup giúp hoàn toàn. Giờ mở Zalo OA ra là thấy lịch đặt tự động — không cần làm gì thêm!"</p>
+      <div class="testi-author">
+        <div class="testi-av">🧖‍♀️</div>
+        <div>
+          <div class="testi-name">Chị Mai Trâm</div>
+          <div class="testi-role">Glow Up Spa, Hà Nội</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="sec fade-in" id="faq">
+  <div class="sec-label">FAQ</div>
+  <div class="sec-title">Câu hỏi thường gặp</div>
+
+  <div class="faq-list">
+    <div class="faq-item">
+      <div class="faq-q">Tôi không biết kỹ thuật có dùng được không?</div>
+      <div class="faq-a">Hoàn toàn được! Chúng tôi hỗ trợ setup toàn bộ cho bạn — từ tạo Zalo OA đến kết nối bot. Bạn chỉ cần cung cấp thông tin spa và dịch vụ. Thông thường setup xong trong 1–3 tiếng.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Bot có hoạt động cả ngày lễ, Tết không?</div>
+      <div class="faq-a">Có! Bot hoạt động 24/7/365, không nghỉ lễ, không nghỉ Tết. Đây chính là lợi thế lớn nhất — khách đặt lịch lúc 23:00 hay 6:00 sáng đều được phản hồi ngay lập tức.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Nếu khách hỏi câu bot không trả lời được thì sao?</div>
+      <div class="faq-a">Bot AI được trang bị Claude AI (Anthropic) nên trả lời được hầu hết câu hỏi về spa, dịch vụ, giá cả. Nếu gặp câu hỏi đặc biệt, bot sẽ tự chuyển sang hỏi thông tin và chủ spa sẽ được thông báo để xử lý.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Tôi đã có Zalo OA chưa setup được không?</div>
+      <div class="faq-a">Nếu bạn đã có Zalo OA, chúng tôi chỉ cần kết nối thêm bot là xong. Nếu chưa có, chúng tôi hỗ trợ tạo Zalo OA hoàn toàn miễn phí.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Huỷ gói có bị mất tiền không?</div>
+      <div class="faq-a">Không. Bạn trả tiền theo tháng, hủy bất kỳ lúc nào. Nếu trong 7 ngày đầu không hài lòng, chúng tôi hoàn tiền 100% không hỏi lý do.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Một tài khoản dùng được cho bao nhiêu Zalo OA?</div>
+      <div class="faq-a">Mỗi gói 200K/tháng dùng cho 1 Zalo OA (1 spa/chi nhánh). Nếu bạn có nhiều chi nhánh, liên hệ để được báo giá combo ưu đãi.</div>
+    </div>
+  </div>
+</section>
+
+<!-- REGISTER FORM -->
+<section class="sec sec-bg fade-in" id="register">
+  <div class="sec-label">Bắt đầu ngay</div>
+  <div class="sec-title">Dùng thử miễn phí 7 ngày</div>
+  <div class="sec-sub">Không cần thẻ ngân hàng · Hủy bất kỳ lúc nào · Hỗ trợ setup miễn phí</div>
+
+  <!-- Urgency mini bar -->
+  <p style="text-align:center;color:var(--rose);font-weight:700;font-size:13px;margin-bottom:24px;">
+    🔥 Còn <span id="slots2">11</span> suất dùng thử miễn phí hôm nay — Đăng ký trước khi hết!
+  </p>
+
+  <div class="reg-wrap">
+    <div class="reg-card">
+      <div class="reg-title">Đăng ký dùng thử ngay</div>
+      <div class="reg-sub">Điền thông tin bên dưới — đội hỗ trợ sẽ liên hệ trong 30 phút ⚡</div>
+
+      <form id="regForm" onsubmit="handleRegister(event)">
+        <div class="form-group">
+          <label class="form-label">Tên chủ spa / người liên hệ *</label>
+          <input class="form-input" type="text" placeholder="VD: Chị Hương Ly" required id="reg-name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Số điện thoại *</label>
+          <input class="form-input" type="tel" placeholder="VD: 0901 234 567" required id="reg-phone">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tên spa của bạn *</label>
+          <input class="form-input" type="text" placeholder="VD: Beauty Spa Hương Ly" required id="reg-spa">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tỉnh / Thành phố</label>
+          <select class="form-input" id="reg-city">
+            <option value="">Chọn tỉnh thành...</option>
+            <option>TP. Hồ Chí Minh</option>
+            <option>Hà Nội</option>
+            <option>Đà Nẵng</option>
+            <option>Bình Dương</option>
+            <option>Đồng Nai</option>
+            <option>Cần Thơ</option>
+            <option>Khác</option>
+          </select>
+        </div>
+        <button type="submit" class="form-submit" id="regBtn">
+          🚀 Dùng thử miễn phí 7 ngày ngay!
+        </button>
+        <p class="form-note">🔒 Thông tin của bạn được bảo mật tuyệt đối · Không spam</p>
+      </form>
+
+      <div id="regSuccess" style="display:none;text-align:center;padding:20px 0;">
+        <div style="font-size:48px;margin-bottom:12px;">🎉</div>
+        <h3 style="color:var(--rose);font-size:20px;margin-bottom:8px;">Đăng ký thành công!</h3>
+        <p style="color:var(--muted);font-size:14px;line-height:1.7;">Đội hỗ trợ sẽ liên hệ bạn trong <strong>30 phút</strong> để tiến hành setup.<br>Trong khi chờ, hãy nhắn tin Zalo cho chúng tôi để được tư vấn nhanh hơn! 💬</p>
+        <a href="https://zalo.me/0901234567" target="_blank"
+           style="display:inline-block;margin-top:16px;background:linear-gradient(135deg,var(--rose),var(--pink));color:white;padding:12px 28px;border-radius:10px;font-weight:700;text-decoration:none;">
+          💬 Nhắn Zalo ngay
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STICKY BOTTOM CTA -->
+<div class="sticky-cta">
+  <a href="#register">🚀 Dùng thử miễn phí — Chỉ 200K/tháng</a>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2025 <strong>Trợ Lý AI Spa</strong> · Sản phẩm công nghệ dành cho spa Việt Nam</p>
+  <p style="margin-top:6px;">Hotline: <strong>0901 234 567</strong> · Zalo: <strong>0901 234 567</strong></p>
+</footer>
+
+<script>
+  // ── Countdown Timer ──────────────────────────────────────────────
+  (function() {
+    // Lấy hoặc tạo deadline = cuối ngày hôm nay
+    const key = 'spa_ai_deadline';
+    let deadline = localStorage.getItem(key);
+    if (!deadline) {
+      const end = new Date();
+      end.setHours(23, 59, 59, 0);
+      deadline = end.getTime();
+      localStorage.setItem(key, deadline);
+    }
+    function tick() {
+      const now  = Date.now();
+      const diff = Math.max(0, deadline - now);
+      const h = String(Math.floor(diff / 3600000)).padStart(2,'0');
+      const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2,'0');
+      const s = String(Math.floor((diff % 60000) / 1000)).padStart(2,'0');
+      const el = document.getElementById('countdown');
+      if (el) el.textContent = `${h}:${m}:${s}`;
+    }
+    tick();
+    setInterval(tick, 1000);
+  })();
+
+  // ── Fake slot counter ─────────────────────────────────────────────
+  (function() {
+    const key = 'spa_ai_slots';
+    let slots = parseInt(localStorage.getItem(key) || '11');
+    // Giảm 1–2 mỗi lần load trang (giả lập người dùng khác đăng ký)
+    const reduce = Math.floor(Math.random() * 2);
+    slots = Math.max(3, slots - reduce);
+    localStorage.setItem(key, slots);
+    document.querySelectorAll('#slots, #slots2').forEach(el => { if(el) el.textContent = slots; });
+  })();
+
+  // ── FAQ accordion ─────────────────────────────────────────────────
+  document.querySelectorAll('.faq-q').forEach(q => {
+    q.addEventListener('click', () => {
+      const item = q.closest('.faq-item');
+      const wasOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+      if (!wasOpen) item.classList.add('open');
+    });
+  });
+
+  // ── Register form ─────────────────────────────────────────────────
+  function handleRegister(e) {
+    e.preventDefault();
+    const btn = document.getElementById('regBtn');
+    btn.textContent = '⏳ Đang gửi...';
+    btn.disabled = true;
+
+    const data = {
+      name:  document.getElementById('reg-name').value,
+      phone: document.getElementById('reg-phone').value,
+      spa:   document.getElementById('reg-spa').value,
+      city:  document.getElementById('reg-city').value,
+    };
+
+    // Gửi về server (hoặc Zalo/Telegram webhook)
+    fetch('/api/spa-register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    }).catch(() => {}).finally(() => {
+      document.getElementById('regForm').style.display  = 'none';
+      document.getElementById('regSuccess').style.display = 'block';
+      // Giảm slot
+      const key = 'spa_ai_slots';
+      const slots = Math.max(2, parseInt(localStorage.getItem(key) || '5') - 1);
+      localStorage.setItem(key, slots);
+      document.querySelectorAll('#slots, #slots2').forEach(el => { if(el) el.textContent = slots; });
+    });
+  }
+
+  // ── Scroll fade-in ────────────────────────────────────────────────
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
