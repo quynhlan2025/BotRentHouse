@@ -87,6 +87,59 @@
     .trust-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); letter-spacing: .4px; font-family: 'Segoe UI', sans-serif; }
     .trust-dot { width: 5px; height: 5px; background: var(--gold3); border-radius: 50%; }
 
+    /* ── HERO PHONES ROW ── */
+    .hero { padding-bottom: 0; }
+    .hero-content { padding-bottom: 52px; }
+    .hero-phones-outer {
+      overflow-x: auto; -webkit-overflow-scrolling: touch;
+      scrollbar-width: none; border-top: 1px solid var(--ivory3);
+      background: linear-gradient(180deg, var(--ivory2) 0%, var(--ivory3) 100%);
+    }
+    .hero-phones-outer::-webkit-scrollbar { display: none; }
+    .hero-phones-scroll {
+      display: flex; gap: 16px; width: fit-content;
+      margin: 0 auto; padding: 40px 40px 48px;
+    }
+    .hp-col { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+    .hp-label {
+      font-size: 10.5px; font-weight: 700; color: var(--gold2);
+      letter-spacing: .8px; text-transform: uppercase;
+      font-family: 'Segoe UI', sans-serif; text-align: center; line-height: 1.5;
+    }
+
+    /* XS phone shell */
+    .phone-xs {
+      width: 178px; position: relative; border-radius: 38px; padding: 8px 7px;
+      background: linear-gradient(160deg, #2c2c2e 0%, #1c1c1e 50%, #2a2a2c 100%);
+      box-shadow: 0 0 0 1.5px #48484a, 0 0 0 2.5px #3a3a3c,
+                  0 24px 64px rgba(0,0,0,.55), 0 6px 18px rgba(0,0,0,.4);
+    }
+    .phone-xs::before { content:''; position:absolute; right:-3px; top:72px; width:2.5px; height:42px; background:#3a3a3c; border-radius:0 2px 2px 0; box-shadow:0 0 0 1px #48484a; }
+    .phone-xs::after  { content:''; position:absolute; left:-3px; top:64px; width:2.5px; height:28px; background:#3a3a3c; border-radius:2px 0 0 2px; box-shadow:0 0 0 1px #48484a, 0 38px 0 0 #3a3a3c, 0 38px 0 1px #48484a, 0 72px 0 0 #3a3a3c, 0 72px 0 1px #48484a; }
+    .phone-xs .screen { border-radius: 32px; overflow: hidden; }
+    .di-xs { position:absolute; top:7px; left:50%; transform:translateX(-50%); width:72px; height:21px; background:#000; border-radius:14px; z-index:10; }
+
+    /* XS Zalo header */
+    .zb-xs { background:#0068ff; color:white; padding:6px 10px 0; }
+    .zs-xs { display:flex; justify-content:space-between; font-size:7.5px; opacity:.9; padding-top:27px; margin-bottom:5px; }
+    .zh-xs { display:flex; align-items:center; gap:7px; padding-bottom:8px; }
+    .za-xs { width:24px; height:24px; border-radius:50%; background:linear-gradient(135deg,#b8945a,#d4b07a); display:flex; align-items:center; justify-content:center; font-size:11px; flex-shrink:0; }
+    .zn-xs { font-size:11px; font-weight:700; line-height:1.2; }
+    .zsu-xs{ font-size:7.5px; opacity:.8; }
+
+    /* XS chat body */
+    .zb-xs-body { background:#f0f2f5; padding:8px; display:flex; flex-direction:column; gap:5px; min-height:272px; }
+    .bb { background:white; color:#222; align-self:flex-start; max-width:90%; padding:6px 8px; font-size:9.5px; line-height:1.55; border-radius:2px 8px 8px 8px; box-shadow:0 1px 2px rgba(0,0,0,.07); }
+    .bm { background:#d9f2ff; color:#003d99; align-self:flex-end; max-width:85%; padding:6px 8px; font-size:9.5px; line-height:1.5; border-radius:8px 2px 8px 8px; }
+    .bbtns { display:flex; flex-wrap:wrap; gap:3px; margin-top:5px; }
+    .bbn { background:var(--ivory2); border:1px solid var(--ivory3); color:var(--slate); padding:3px 7px; border-radius:3px; font-size:9px; font-weight:600; font-family:'Segoe UI',sans-serif; white-space:nowrap; }
+    .bbn-dark { background:var(--charcoal) !important; border-color:var(--charcoal) !important; color:var(--ivory) !important; }
+
+    /* XS input bar */
+    .zi-xs { background:white; padding:6px 8px; display:flex; align-items:center; gap:5px; border-top:1px solid #e8e8e8; }
+    .zin-xs { flex:1; background:#f0f2f5; border-radius:12px; padding:4px 9px; font-size:9.5px; color:#999; }
+    .zsd-xs { width:22px; height:22px; background:#0068ff; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:9px; }
+
     /* ── PROOF BAR ── */
     .proof-bar { background: var(--charcoal); padding: 36px 20px; }
     .proof-inner { max-width: 860px; margin: 0 auto; display: flex; justify-content: space-around; flex-wrap: wrap; gap: 24px; }
@@ -335,23 +388,201 @@
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-eyebrow">Trợ lý AI chuyên biệt cho Spa & Làm đẹp</div>
-  <h1>
-    Spa mở cửa 24/7<br>
-    <em>Khách tự đặt lịch, không cần nhân viên</em>
-  </h1>
-  <div class="hero-divider"></div>
-  <p class="hero-sub">Tích hợp Zalo trong 1 ngày. Không cần kỹ thuật. Trợ lý AI tự trả lời, đặt lịch, upsell và nhắc hẹn — hoàn toàn tự động.</p>
-  <div class="hero-ctas">
-    <a href="#register" class="btn-main">Dùng thử miễn phí 7 ngày</a>
-    <a href="#demo" class="btn-outline">Xem demo</a>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Trợ lý AI chuyên biệt cho Spa & Làm đẹp</div>
+    <h1>
+      Spa mở cửa 24/7<br>
+      <em>Khách tự đặt lịch, không cần nhân viên</em>
+    </h1>
+    <div class="hero-divider"></div>
+    <p class="hero-sub">Tích hợp Zalo trong 1 ngày. AI tự tư vấn, upsell và chốt sale — hoàn toàn tự động.</p>
+    <div class="hero-ctas">
+      <a href="#register" class="btn-main">Dùng thử miễn phí 7 ngày</a>
+      <a href="#demo" class="btn-outline">Xem demo</a>
+    </div>
+    <div class="hero-trust">
+      <span class="trust-item"><span class="trust-dot"></span> Không cần kỹ thuật</span>
+      <span class="trust-item"><span class="trust-dot"></span> Tích hợp Zalo sẵn</span>
+      <span class="trust-item"><span class="trust-dot"></span> Hoàn tiền 7 ngày</span>
+      <span class="trust-item"><span class="trust-dot"></span> Hỗ trợ setup miễn phí</span>
+    </div>
   </div>
-  <div class="hero-trust">
-    <span class="trust-item"><span class="trust-dot"></span> Không cần kỹ thuật</span>
-    <span class="trust-item"><span class="trust-dot"></span> Tích hợp Zalo sẵn</span>
-    <span class="trust-item"><span class="trust-dot"></span> Hoàn tiền 7 ngày</span>
-    <span class="trust-item"><span class="trust-dot"></span> Hỗ trợ setup miễn phí</span>
-  </div>
+
+  <!-- 5 PHONES -->
+  <div class="hero-phones-outer">
+    <div class="hero-phones-scroll">
+
+      <!-- P1: Gội đầu dưỡng sinh -->
+      <div class="hp-col">
+        <div class="phone phone-xs">
+          <div class="dynamic-island di-xs"></div>
+          <div class="screen">
+            <div class="zalo-bar zb-xs">
+              <div class="zs-xs"><span>9:41</span><span>🔋</span></div>
+              <div class="zh-xs">
+                <span style="font-size:11px;opacity:.85">‹</span>
+                <div class="za-xs">✦</div>
+                <div><div class="zn-xs">Beauty Spa AI</div><div class="zsu-xs">● Online</div></div>
+              </div>
+            </div>
+            <div class="zb-xs-body">
+              <div class="bm chat-bubble" style="--d:.1s">Gội đầu dưỡng sinh có tác dụng gì ạ?</div>
+              <div class="bb chat-bubble" style="--d:.5s">Gội đầu dưỡng sinh giúp bạn:<br>
+                ✅ Thư giãn da đầu, giảm stress<br>
+                ✅ Dưỡng tóc chắc khỏe từ gốc<br>
+                ✅ Kích thích mọc tóc tự nhiên<br><br>
+                💧 <strong>180.000đ</strong> · 45 phút<br>
+                Bạn muốn thử buổi đầu không? 😊
+                <div class="bbtns"><span class="bbn bbn-dark">📅 Đặt lịch ngay</span></div>
+              </div>
+              <div class="bm chat-bubble" style="--d:1s">Cho mình đặt thử!</div>
+              <div class="bb chat-bubble" style="--d:1.3s">Tuyệt! Bạn cho mình biết tên và SĐT nhé 🌸</div>
+            </div>
+            <div class="zi-xs"><div class="zin-xs">Nhắn tin...</div><div class="zsd-xs">➤</div></div>
+          </div>
+        </div>
+        <div class="hp-label">Gội đầu<br>dưỡng sinh</div>
+      </div>
+
+      <!-- P2: Massage -->
+      <div class="hp-col">
+        <div class="phone phone-xs">
+          <div class="dynamic-island di-xs"></div>
+          <div class="screen">
+            <div class="zalo-bar zb-xs">
+              <div class="zs-xs"><span>10:15</span><span>🔋</span></div>
+              <div class="zh-xs">
+                <span style="font-size:11px;opacity:.85">‹</span>
+                <div class="za-xs">✦</div>
+                <div><div class="zn-xs">Beauty Spa AI</div><div class="zsu-xs">● Online</div></div>
+              </div>
+            </div>
+            <div class="zb-xs-body">
+              <div class="bm chat-bubble" style="--d:.1s">Mình hay bị đau vai gáy, có gói phù hợp không?</div>
+              <div class="bb chat-bubble" style="--d:.5s">Massage 90 phút tập trung vai gáy &amp; lưng trên — rất hợp bạn! 💆<br><br>
+                ✅ Giảm căng cơ tức thì<br>
+                ✅ Cải thiện tuần hoàn máu<br>
+                ✅ Cảm nhận ngay buổi đầu<br><br>
+                <strong>480.000đ</strong> · 90 phút
+                <div class="bbtns">
+                  <span class="bbn bbn-dark">📅 Đặt 90 phút</span>
+                  <span class="bbn">60 phút — 350K</span>
+                </div>
+              </div>
+              <div class="bm chat-bubble" style="--d:1s">Đặt 90 phút đi!</div>
+              <div class="bb chat-bubble" style="--d:1.3s">Cuối tuần còn <strong>2 chỗ trống</strong> thôi — mình giữ chỗ ngay nhé! 🔥</div>
+            </div>
+            <div class="zi-xs"><div class="zin-xs">Nhắn tin...</div><div class="zsd-xs">➤</div></div>
+          </div>
+        </div>
+        <div class="hp-label">Tư vấn<br>massage</div>
+      </div>
+
+      <!-- P3: Chăm sóc da mặt & liệu trình -->
+      <div class="hp-col">
+        <div class="phone phone-xs">
+          <div class="dynamic-island di-xs"></div>
+          <div class="screen">
+            <div class="zalo-bar zb-xs">
+              <div class="zs-xs"><span>14:22</span><span>🔋</span></div>
+              <div class="zh-xs">
+                <span style="font-size:11px;opacity:.85">‹</span>
+                <div class="za-xs">✦</div>
+                <div><div class="zn-xs">Beauty Spa AI</div><div class="zsu-xs">● Online</div></div>
+              </div>
+            </div>
+            <div class="zb-xs-body">
+              <div class="bm chat-bubble" style="--d:.1s">Da mình bị thâm nám, có liệu trình nào không?</div>
+              <div class="bb chat-bubble" style="--d:.5s">Dạ có! Với da thâm nám mình gợi ý:<br><br>
+                ✨ <strong>Facial đơn:</strong> 420K/buổi<br>
+                🌟 <strong>Liệu trình 5 buổi:</strong> 1.800K<br>
+                <span style="font-size:9px;color:#888">(tiết kiệm 300K · 1 buổi/tuần)</span><br><br>
+                Da đều màu, giảm thâm rõ từ buổi 2–3! Bạn muốn thử 1 buổi trước không?
+                <div class="bbtns">
+                  <span class="bbn bbn-dark">✨ Đặt thử 1 buổi</span>
+                  <span class="bbn">📋 Liệu trình 5 buổi</span>
+                </div>
+              </div>
+            </div>
+            <div class="zi-xs"><div class="zin-xs">Nhắn tin...</div><div class="zsd-xs">➤</div></div>
+          </div>
+        </div>
+        <div class="hp-label">Chăm sóc da<br>& liệu trình</div>
+      </div>
+
+      <!-- P4: Xử lý phản đối -->
+      <div class="hp-col">
+        <div class="phone phone-xs">
+          <div class="dynamic-island di-xs"></div>
+          <div class="screen">
+            <div class="zalo-bar zb-xs">
+              <div class="zs-xs"><span>16:05</span><span>🔋</span></div>
+              <div class="zh-xs">
+                <span style="font-size:11px;opacity:.85">‹</span>
+                <div class="za-xs">✦</div>
+                <div><div class="zn-xs">Beauty Spa AI</div><div class="zsu-xs">● Online</div></div>
+              </div>
+            </div>
+            <div class="zb-xs-body">
+              <div class="bm chat-bubble" style="--d:.1s">Spa bạn có đắt hơn chỗ khác không?</div>
+              <div class="bb chat-bubble" style="--d:.5s">Câu hỏi rất hay! 😊 Giá chúng mình tầm trung nhưng bạn nhận được:<br><br>
+                ✅ KTV 5+ năm kinh nghiệm<br>
+                ✅ Sản phẩm nhập khẩu chính hãng<br>
+                ✅ Không gian riêng tư hoàn toàn<br><br>
+                🎁 <strong>Khách mới giảm 15%</strong> buổi đầu!<br>
+                <span style="font-size:9px;color:#888">95% khách quay lại lần 2 ✦</span>
+                <div class="bbtns"><span class="bbn bbn-dark">🎁 Dùng ưu đãi 15%</span></div>
+              </div>
+              <div class="bm chat-bubble" style="--d:1.1s">Ok, cho mình thử!</div>
+            </div>
+            <div class="zi-xs"><div class="zin-xs">Nhắn tin...</div><div class="zsd-xs">➤</div></div>
+          </div>
+        </div>
+        <div class="hp-label">Xử lý<br>phản đối</div>
+      </div>
+
+      <!-- P5: Chốt sale -->
+      <div class="hp-col">
+        <div class="phone phone-xs">
+          <div class="dynamic-island di-xs"></div>
+          <div class="screen">
+            <div class="zalo-bar zb-xs">
+              <div class="zs-xs"><span>16:08</span><span>🔋</span></div>
+              <div class="zh-xs">
+                <span style="font-size:11px;opacity:.85">‹</span>
+                <div class="za-xs">✦</div>
+                <div><div class="zn-xs">Beauty Spa AI</div><div class="zsu-xs">● Online</div></div>
+              </div>
+            </div>
+            <div class="zb-xs-body">
+              <div class="bb chat-bubble" style="--d:.1s">
+                🎉 <strong>ĐẶT LỊCH THÀNH CÔNG!</strong><br>
+                👤 Thu Hà · 0912 xxx xxx<br>
+                💆 Massage thư giãn 90 phút<br>
+                📅 Thứ 7 · 10:00<br>
+                📍 Beauty Spa · Q.3
+              </div>
+              <div class="bb chat-bubble" style="--d:.6s">
+                🎁 <strong>ƯU ĐÃI THÊM HÔM NAY:</strong><br>
+                Gội đầu sau massage<br>
+                <span style="text-decoration:line-through;color:#aaa;font-size:9px">180K</span> → <strong>144K</strong> (–20%)<br>
+                <span style="font-size:9px;color:#888">Chỉ khi đặt cùng lịch!</span>
+                <div class="bbtns">
+                  <span class="bbn bbn-dark">✅ Thêm ngay</span>
+                  <span class="bbn">Không</span>
+                </div>
+              </div>
+              <div class="bm chat-bubble" style="--d:1.1s">Thêm ngay!</div>
+              <div class="bb chat-bubble" style="--d:1.4s">Hoàn hảo! ✦ Hẹn gặp Thu Hà thứ 7 nhé 🌸</div>
+            </div>
+            <div class="zi-xs"><div class="zin-xs">Nhắn tin...</div><div class="zsd-xs">➤</div></div>
+          </div>
+        </div>
+        <div class="hp-label">Chốt sale<br>& upsell</div>
+      </div>
+
+    </div><!-- /.hero-phones-scroll -->
+  </div><!-- /.hero-phones-outer -->
 </section>
 
 <!-- PROOF BAR -->
@@ -508,8 +739,8 @@
   </div>
 </section>
 
-<!-- SALES DEMO: 3 PHONES -->
-<section class="sec sec-ivory fade-in" id="sales-demo">
+<!-- SALES DEMO: 3 PHONES (replaced by hero phones above) -->
+<section class="sec sec-ivory fade-in" id="sales-demo" style="display:none">
   <div class="sec-eyebrow">AI chốt sale</div>
   <div class="sec-title">3 bước AI biến khách hỏi thành khách đặt lịch</div>
   <div class="sec-rule"></div>
