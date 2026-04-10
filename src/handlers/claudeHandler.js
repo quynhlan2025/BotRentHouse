@@ -5,7 +5,7 @@ const { getRoomsSummary } = require('./roomHandler');
 const claude = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 // Bot AI = haiku (rẻ), Bot AI Pro = sonnet (xịn hơn)
-const MODEL = process.env.CLAUDE_MODEL || 'claude-haiku-4-5-20251001';
+const MODEL = process.env.CLAUDE_MODEL || 'claude-sonnet-4-6';
 
 async function buildSystemPrompt() {
   const roomList = await getRoomsSummary();
