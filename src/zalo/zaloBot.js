@@ -7,6 +7,28 @@ const { askClaude } = require('../handlers/claudeHandler');
 const BOT_TOKEN = process.env.ZALO_OA_TOKEN;
 const BASE_URL = `https://bot-api.zaloplatforms.com/bot${BOT_TOKEN}`;
 
+const LANDLORD_NAME  = process.env.LANDLORD_NAME  || 'Chủ nhà';
+const LANDLORD_PHONE = process.env.LANDLORD_PHONE || '0901 234 567';
+const LANDLORD_HOURS = process.env.LANDLORD_HOURS || '7:00 – 22:00';
+
+// Gửi thông báo Telegram cho chủ nhà
+async function notifyLandlord(req) {
+  const chatId = process.env.LANDLORD_TELEGRAM_ID;
+  const token  = process.env.TELEGRAM_BOT_TOKEN;
+  if (!chatId || !token) return;
+  const isUrgent = /khẩn|gấp|cháy|điện giật|nguy hiểm/i.test(req.description);
+  const msg =
+    `${isUrgent ? '🚨 SỰ CỐ KHẨN' : '🔧 Sự cố mới'}\n\n` +
+    `🏠 Phòng: ${req.roomNumber}\n` +
+    `👤 ${req.displayName}${req.phone ? ' · ' + req.phone : ''}\n` +
+    `📋 ${req.description}\n` +
+    `🕐 ${new Date().toLocaleString('vi-VN')}\n\n` +
+    `👉 Xem tại: ${process.env.APP_URL || 'http://localhost:3000'}/admin/maintenance`;
+  await axios.post(`https://api.telegram.org/bot${token}/sendMessage`, {
+    chat_id: chatId, text: msg,
+  }).catch(() => {});
+}
+
 // Lấy profile user từ Zalo API
 async function fetchUserProfile(userId) {
   try {
@@ -164,11 +186,12 @@ async function handleZaloMessage(event) {
     );
   }
 
+  // ── BƯỚC 1: Kích hoạt báo sự cố → gửi template ──────────────────────────────
   if (action === 'menu_suachua' || action === '5' || /báo sự cố|sửa chữa|hỏng|bị hỏng|bị hư/i.test(action)) {
     maintenanceState[userId] = { step: 'waiting_form' };
     return sendText(userId,
       '🔧 Báo sự cố / Yêu cầu sửa chữa\n\n' +
-      'Vui lòng copy mẫu bên dưới, điền thông tin và gửi lại:\n\n' +
+      'Copy mẫu bên dưới, điền và gửi lại:\n\n' +
       '━━━━━━━━━━━━━━━\n' +
       'Phòng: [số phòng]\n' +
       'Sự cố: [mô tả vấn đề]\n' +
@@ -182,10 +205,10 @@ async function handleZaloMessage(event) {
     );
   }
 
+  // ── BƯỚC 2: Nhận form → parse → lưu DB → hiện 2 lựa chọn ────────────────────
   if (maintenanceState[userId]?.step === 'waiting_form') {
-    // Parse template: tìm "Phòng: xxx" và "Sự cố: xxx"
-    const roomMatch = text.match(/ph[oò]ng\s*[:\-]\s*(.+)/i);
-    const descMatch = text.match(/s[ựu]\s*c[oố]\s*[:\-]\s*(.+)/i);
+    const roomMatch  = text.match(/ph[oò]ng\s*[:\-]\s*(.+)/i);
+    const descMatch  = text.match(/s[ựu]\s*c[oố]\s*[:\-]\s*(.+)/i);
     const levelMatch = text.match(/m[uứ]c\s*[đd][oộ]\s*[:\-]\s*(.+)/i);
 
     if (!roomMatch || !descMatch) {
@@ -198,40 +221,90 @@ async function handleZaloMessage(event) {
       );
     }
 
-    delete maintenanceState[userId];
     const roomNumber  = roomMatch[1].trim();
     const description = descMatch[1].trim();
     const level       = levelMatch ? levelMatch[1].trim() : 'bình thường';
-    const isUrgent    = /khẩn|gấp|nguy hiểm|cháy|điện giật/i.test(level + description);
+    const isUrgent    = /khẩn|gấp|cháy|điện giật|nguy hiểm/i.test(level + description);
 
-    await MaintenanceRequest.create({
+    // Lưu DB
+    const saved = await MaintenanceRequest.create({
       zaloUserId:  userId,
       displayName: profile.displayName || 'Khách hàng',
       phone:       profile.phone || '',
       roomNumber,
       description: `${description} (Mức độ: ${level})`,
+      status: 'pending',
     });
 
+    // Thông báo chủ nhà qua Telegram
+    await notifyLandlord(saved);
+
+    // Lưu state chờ lựa chọn
+    maintenanceState[userId] = { step: 'waiting_choice', roomNumber, description, isUrgent };
+
     if (isUrgent) {
+      // Sự cố khẩn → hiện SĐT ngay + vẫn cho chọn
       return sendText(userId,
         '🚨 Đã ghi nhận SỰ CỐ KHẨN!\n\n' +
         `🏠 Phòng: ${roomNumber}\n` +
         `📋 Sự cố: ${description}\n\n` +
-        '📞 Liên hệ chủ nhà NGAY:\n' +
-        '👤 Nguyễn Văn A — 0901 234 567\n' +
-        '🕐 Trực 7:00 – 22:00',
+        'Bạn muốn:\n' +
+        '━━━━━━━━━━━━━━━\n' +
+        '1️⃣ 📞 Liên hệ chủ nhà NGAY\n' +
+        '2️⃣ ⏳ Chờ chủ nhà xử lý\n' +
+        '━━━━━━━━━━━━━━━',
         profile
       );
     }
 
     return sendText(userId,
-      '✅ Đã ghi nhận yêu cầu!\n\n' +
+      '✅ Đã ghi nhận yêu cầu sửa chữa!\n\n' +
       `🏠 Phòng: ${roomNumber}\n` +
       `📋 Sự cố: ${description}\n` +
       `⚡ Mức độ: ${level}\n\n` +
-      '⏳ Chủ nhà sẽ liên hệ bạn sớm.\n\n' +
-      'Cần liên hệ ngay?\n' +
-      '📞 0901 234 567 (7:00 – 22:00)',
+      'Bạn muốn:\n' +
+      '━━━━━━━━━━━━━━━\n' +
+      '1️⃣ 📞 Liên hệ chủ nhà ngay\n' +
+      '2️⃣ ⏳ Để chủ nhà xử lý sau\n' +
+      '━━━━━━━━━━━━━━━',
+      profile
+    );
+  }
+
+  // ── BƯỚC 3: Xử lý lựa chọn của khách ────────────────────────────────────────
+  if (maintenanceState[userId]?.step === 'waiting_choice') {
+    const { roomNumber, description, isUrgent } = maintenanceState[userId];
+    delete maintenanceState[userId];
+
+    const wantsContact = /^1$|liên hệ|gọi|phone|sđt/i.test(action);
+    const wantsWait    = /^2$|chờ|để|sau/i.test(action);
+
+    if (wantsContact) {
+      return sendText(userId,
+        `📞 Thông tin liên hệ chủ nhà:\n\n` +
+        `👤 ${LANDLORD_NAME}\n` +
+        `📱 ${LANDLORD_PHONE}\n` +
+        `🕐 Giờ trực: ${LANDLORD_HOURS}\n\n` +
+        `${isUrgent ? '🚨 Sự cố khẩn — gọi ngay nhé!' : 'Chủ nhà đã nhận thông báo, sẽ phản hồi sớm!'}`,
+        profile
+      );
+    }
+
+    if (wantsWait) {
+      return sendText(userId,
+        '⏳ Đã ghi nhận!\n\n' +
+        'Chủ nhà đã nhận thông báo và sẽ liên hệ bạn sớm nhất.\n\n' +
+        'Nếu cần gấp, gọi:\n' +
+        `📞 ${LANDLORD_PHONE} (${LANDLORD_HOURS})`,
+        profile
+      );
+    }
+
+    // Nếu nhắn lung tung → nhắc lại
+    return sendText(userId,
+      'Vui lòng chọn:\n' +
+      '1️⃣ 📞 Liên hệ chủ nhà ngay\n' +
+      '2️⃣ ⏳ Để chủ nhà xử lý sau',
       profile
     );
   }
