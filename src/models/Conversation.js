@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const conversationSchema = new mongoose.Schema({
-  userId: { type: Number, required: true, unique: true },
+  userId: { type: String, required: true, unique: true },
   username: { type: String },
   firstName: { type: String },
   messages: [{
