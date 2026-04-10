@@ -184,9 +184,9 @@
       <div class="ch-actions">
         <% if (selectedUser.takenOver) { %>
           <span class="ch-badge takeover">👤 Admin đang tiếp quản</span>
-          <button class="btn-takeover give" onclick="setTakeover(false)">🤖 Trả lại bot</button>
+          <button class="btn-takeover give" onclick="setTakeover(false)">🤖 Trả lại trợ lý ảo</button>
         <% } else { %>
-          <span class="ch-badge">🤖 Bot đang trả lời</span>
+          <span class="ch-badge">🤖 Trợ lý ảo đang trả lời</span>
           <button class="btn-takeover take" onclick="setTakeover(true)">👤 Tiếp quản</button>
         <% } %>
       </div>
@@ -215,10 +215,10 @@
       <% if (selectedUser.takenOver) { %>
       <span style="font-size:11px;color:#92400e;font-weight:700;white-space:nowrap;">👤 Admin:</span>
       <% } else { %>
-      <span style="font-size:11px;color:var(--zblue);font-weight:700;white-space:nowrap;">🤖 Bot:</span>
+      <span style="font-size:11px;color:var(--zblue);font-weight:700;white-space:nowrap;">🤖 Trợ lý ảo:</span>
       <% } %>
       <textarea class="reply-input" id="replyInput"
-        placeholder="<%= selectedUser.takenOver ? 'Bạn đang nhắn với tư cách Admin...' : 'Reply sẽ gửi qua bot...' %>"
+        placeholder="<%= selectedUser.takenOver ? 'Bạn đang nhắn với tư cách Admin...' : 'Reply sẽ gửi qua trợ lý ảo...' %>"
         rows="1"
         onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendReply();}"></textarea>
       <button class="send-btn" onclick="sendReply()">➤</button>
