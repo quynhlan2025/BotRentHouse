@@ -1,6 +1,7 @@
 const axios = require('axios');
 const Room = require('../models/Room');
 const ZaloConversation = require('../models/ZaloConversation');
+const { askClaude } = require('../handlers/claudeHandler');
 
 const BOT_TOKEN = process.env.ZALO_OA_TOKEN;
 const BASE_URL = `https://bot-api.zaloplatforms.com/bot${BOT_TOKEN}`;
@@ -146,7 +147,7 @@ async function handleZaloMessage(event) {
   if (action === 'menu_lienhe' || action === '3') {
     return sendWithMenu(userId,
       '📞 Thông tin liên hệ\n\n👤 Chủ nhà: Nguyễn Văn A\n📱 SĐT: 0901 234 567\n🕐 Giờ làm việc: 8:00 - 20:00',
-      displayName
+      profile
     );
   }
 
@@ -155,7 +156,7 @@ async function handleZaloMessage(event) {
     const available = await Room.countDocuments({ status: 'available' });
     return sendWithMenu(userId,
       `🏠 Giới thiệu\n\nChúng tôi cho thuê phòng trọ tại TP.HCM.\n\n📊 Tổng phòng: ${total}\n✅ Còn trống: ${available}\n\nLiên hệ ngay để được tư vấn!`,
-      displayName
+      profile
     );
   }
 
@@ -178,7 +179,14 @@ async function handleZaloMessage(event) {
     return sendWithMenu(userId, 'Bạn cần hỗ trợ thêm gì không?', profile);
   }
 
-  return sendWithMenu(userId, 'Xin chào! 👋 Chọn một mục bên dưới để bắt đầu!', profile);
+  // Không khớp menu → gọi Claude AI trả lời tự nhiên
+  try {
+    const aiReply = await askClaude(userId, profile.displayName, '', text);
+    return sendText(userId, aiReply, profile);
+  } catch (err) {
+    console.error('Claude error:', err.message);
+    return sendWithMenu(userId, 'Xin chào! 👋 Chọn một mục bên dưới để bắt đầu!', profile);
+  }
 }
 
 module.exports = { handleZaloMessage };
