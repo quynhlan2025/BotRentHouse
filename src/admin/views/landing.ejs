@@ -74,18 +74,43 @@
     .demo-text ul li { display: flex; align-items: center; gap: 10px; font-size: 15px; }
     .demo-text ul li::before { content: '✅'; }
 
-    .chat-mockup { background: #f5f5f5; border-radius: 16px; padding: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.12); }
-    .chat-header { background: #2c7a4b; color: white; border-radius: 10px 10px 0 0; padding: 12px 16px; display: flex; align-items: center; gap: 10px; margin: -16px -16px 16px; }
-    .chat-avatar { width: 36px; height: 36px; background: rgba(255,255,255,0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; }
-    .chat-name { font-weight: 600; font-size: 15px; }
-    .chat-status { font-size: 12px; opacity: 0.8; }
-    .chat-messages { display: flex; flex-direction: column; gap: 10px; }
-    .msg { max-width: 85%; padding: 10px 14px; border-radius: 12px; font-size: 14px; line-height: 1.5; }
-    .msg.bot { background: white; color: #333; align-self: flex-start; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-radius: 4px 12px 12px 12px; }
-    .msg.user { background: #2c7a4b; color: white; align-self: flex-end; border-radius: 12px 4px 12px 12px; }
-    .msg-time { font-size: 11px; opacity: 0.6; margin-top: 4px; }
-    .chat-btns { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-    .chat-btn { background: #f0faf5; border: 1px solid #2c7a4b; color: #2c7a4b; padding: 6px 12px; border-radius: 16px; font-size: 12px; font-weight: 500; }
+    /* ── iPhone / Zalo mockup ── */
+    .phone-wrap {
+      display: flex; justify-content: center; align-items: center;
+      background: linear-gradient(135deg, #1a5c35 0%, #2c7a4b 60%, #38a169 100%);
+      border-radius: 28px; padding: 28px 24px;
+      box-shadow: 0 24px 60px rgba(44,122,75,.35);
+    }
+    .iphone {
+      background: #1c1c1e; border-radius: 44px; padding: 10px;
+      width: 230px;
+      box-shadow: 0 0 0 1px #3a3a3c, 0 16px 40px rgba(0,0,0,.5);
+      position: relative;
+    }
+    .iphone-screen { background: #ece5dd; border-radius: 36px; overflow: hidden; position: relative; }
+    /* Dynamic Island */
+    .dynamic-island {
+      position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+      width: 72px; height: 22px; background: #000; border-radius: 14px; z-index: 10;
+    }
+    /* Zalo header bar */
+    .z-bar { background: #0068ff; color: white; padding: 34px 10px 8px; }
+    .z-row { display: flex; align-items: center; gap: 7px; }
+    .z-av {
+      width: 26px; height: 26px; background: white; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .z-logo { font-size: 12px; font-weight: 900; font-style: italic; color: #0068ff; }
+    .z-name { font-size: 11px; font-weight: 700; }
+    .z-sub  { font-size: 8px; opacity: .8; }
+    /* Chat body */
+    .z-body { background: #f0f2f5; padding: 8px; display: flex; flex-direction: column; gap: 5px; min-height: 220px; }
+    .zm { max-width: 86%; padding: 6px 9px; font-size: 10px; line-height: 1.45; border-radius: 8px; }
+    .zmb { background: white; align-self: flex-start; border-radius: 2px 8px 8px 8px; box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+    .zmu { background: #d9f2ff; color: #003d99; align-self: flex-end; border-radius: 8px 2px 8px 8px; }
+    .zmt { font-size: 8px; color: #aaa; margin-top: 2px; }
+    .zmbtns { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 4px; }
+    .zmbtn { background: #e8f4ee; border: 1px solid #2c7a4b; color: #1a5c35; padding: 2px 7px; border-radius: 8px; font-size: 9px; font-weight: 600; }
 
     /* ── PRICING ── */
     .pricing { padding: 70px 20px; background: #f9f9f9; }
@@ -262,38 +287,52 @@
         <li>Cung cấp thông tin liên hệ ngay</li>
       </ul>
     </div>
-    <div class="chat-mockup">
-      <div class="chat-header">
-        <div class="chat-avatar">🏠</div>
-        <div>
-          <div class="chat-name">Nhà trọ quận 3</div>
-          <div class="chat-status">🟢 Đang hoạt động</div>
-        </div>
-      </div>
-      <div class="chat-messages">
-        <div class="msg bot">
-          Xin chào! 👋 Tôi là Nhà trọ quận 3.<br>
-          Chọn một mục để bắt đầu!
-          <div class="chat-btns">
-            <span class="chat-btn">📋 Danh sách phòng</span>
-            <span class="chat-btn">🔍 Tìm theo giá</span>
-            <span class="chat-btn">📞 Liên hệ</span>
+    <div class="phone-wrap">
+      <div class="iphone">
+        <div class="iphone-screen">
+          <div class="dynamic-island"></div>
+          <!-- Zalo header -->
+          <div class="z-bar">
+            <div class="z-row">
+              <div class="z-av"><div class="z-logo">Z</div></div>
+              <div>
+                <div class="z-name">🏠 Nhà trọ quận 3</div>
+                <div class="z-sub">🟢 Đang hoạt động</div>
+              </div>
+            </div>
           </div>
-          <div class="msg-time">09:00</div>
-        </div>
-        <div class="msg user">có phòng nào dưới 3tr ko bạn<div class="msg-time">09:01</div></div>
-        <div class="msg bot">
-          🔍 Tìm thấy 2 phòng dưới 3.000.000đ:<br><br>
-          🏠 <b>Phòng 01</b> — 2.500.000đ/tháng<br>
-          📍 Quận 1, TP.HCM | 20m²<br>
-          ✅ Còn trống
-          <div class="msg-time">09:01</div>
-        </div>
-        <div class="msg user">cho xem ảnh phòng 01 với<div class="msg-time">09:02</div></div>
-        <div class="msg bot">
-          📸 Đây là ảnh Phòng 01!<br>
-          📞 Liên hệ: <b>0901 234 567</b>
-          <div class="msg-time">09:02</div>
+          <!-- Chat body -->
+          <div class="z-body">
+            <div class="zm zmb">
+              Xin chào! 👋 Tôi là trợ lý ảo Nhà trọ quận 3.<br>Chọn mục bạn cần:
+              <div class="zmbtns">
+                <span class="zmbtn">📋 Danh sách phòng</span>
+                <span class="zmbtn">🔍 Tìm theo giá</span>
+                <span class="zmbtn">📞 Liên hệ</span>
+              </div>
+              <div class="zmt">09:00</div>
+            </div>
+            <div class="zm zmu">có phòng nào dưới 3tr ko<div class="zmt" style="text-align:right">09:01</div></div>
+            <div class="zm zmb">
+              🔍 Tìm thấy 2 phòng dưới 3tr:<br>
+              🏠 <b>Phòng 101</b> — 2.500.000đ<br>
+              📍 Q.3, HCM · 20m² · ✅ Còn trống<br>
+              🏠 <b>Phòng 102</b> — 2.800.000đ<br>
+              📍 Q.3, HCM · 25m² · ✅ Còn trống
+              <div class="zmt">09:01</div>
+            </div>
+            <div class="zm zmu">cho xem ảnh phòng 101 với<div class="zmt" style="text-align:right">09:02</div></div>
+            <div class="zm zmb">
+              📸 Ảnh Phòng 101:<br>
+              🛏 Nội thất đầy đủ · WC riêng<br>
+              📞 Liên hệ: <b>0901 234 567</b>
+              <div class="zmbtns">
+                <span class="zmbtn">📅 Đặt lịch xem</span>
+                <span class="zmbtn">◀ Quay lại</span>
+              </div>
+              <div class="zmt">09:02</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
