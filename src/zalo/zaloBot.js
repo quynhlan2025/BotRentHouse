@@ -5,8 +5,9 @@ const MaintenanceRequest = require('../models/MaintenanceRequest');
 const RoomBill = require('../models/RoomBill');
 const { askClaude } = require('../handlers/claudeHandler');
 
-const BOT_TOKEN = process.env.ZALO_OA_TOKEN;
-const BASE_URL = `https://bot-api.zaloplatforms.com/bot${BOT_TOKEN}`;
+const OA_TOKEN = process.env.ZALO_OA_TOKEN;
+const ZALO_API = 'https://openapi.zalo.me/v2.0/oa';
+const zaloHeaders = { access_token: OA_TOKEN };
 
 const LANDLORD_NAME  = process.env.LANDLORD_NAME  || 'Chủ nhà';
 const LANDLORD_PHONE = process.env.LANDLORD_PHONE || '0901 234 567';
@@ -33,7 +34,8 @@ async function notifyLandlord(req) {
 // Lấy profile user từ Zalo API
 async function fetchUserProfile(userId) {
   try {
-    const res = await axios.get(`${BASE_URL}/getUserInfo`, {
+    const res = await axios.get(`${ZALO_API}/getprofile`, {
+      headers: zaloHeaders,
       params: { user_id: userId }
     });
     const data = res.data?.data || res.data || {};
@@ -82,27 +84,43 @@ async function saveMessage(userId, fromEvent, role, text) {
 // Gửi tin nhắn text
 async function sendText(userId, text, profile) {
   await saveMessage(userId, profile || {}, 'bot', text);
-  await axios.post(`${BASE_URL}/sendMessage`, {
-    chat_id: userId,
-    text,
-  });
+  await axios.post(`${ZALO_API}/message`, {
+    recipient: { user_id: userId },
+    message:   { text },
+  }, { headers: zaloHeaders }).catch(e => console.error('Zalo sendText error:', e.response?.data || e.message));
 }
 
-// Gửi tin nhắn kèm menu dạng text
+// Gửi tin nhắn kèm nút bấm (tối đa 5 nút)
+async function sendWithButtons(userId, text, buttons, profile) {
+  await saveMessage(userId, profile || {}, 'bot', text);
+  await axios.post(`${ZALO_API}/message`, {
+    recipient: { user_id: userId },
+    message: {
+      attachment: {
+        type: 'template',
+        payload: {
+          template_type: 'button_list',
+          elements: [{
+            title:    '🏠 Nhà trọ quận 3',
+            subtitle: text,
+            buttons,
+          }],
+        },
+      },
+    },
+  }, { headers: zaloHeaders }).catch(e => console.error('Zalo sendButtons error:', e.response?.data || e.message));
+}
+
+// Gửi menu chính với nút bấm
 async function sendWithMenu(userId, text, profile) {
-  await sendText(userId,
-    text + '\n\n' +
-    '━━━━━━━━━━━━━━━\n' +
-    '1️⃣ Danh sách phòng\n' +
-    '2️⃣ Tìm phòng theo giá\n' +
-    '3️⃣ Liên hệ chủ nhà\n' +
-    '4️⃣ Giới thiệu dịch vụ\n' +
-    '5️⃣ Báo sự cố / sửa chữa\n' +
-    '6️⃣ Xem hóa đơn tiền phòng\n' +
-    '━━━━━━━━━━━━━━━\n' +
-    '👉 Nhắn số để chọn',
-    profile
-  );
+  await sendText(userId, text, profile);
+  await sendWithButtons(userId, 'Chọn mục bạn cần:', [
+    { title: '📋 Danh sách phòng',     type: 'oa.query.hide', payload: '1' },
+    { title: '🔍 Tìm phòng theo giá',  type: 'oa.query.hide', payload: '2' },
+    { title: '📞 Liên hệ chủ nhà',     type: 'oa.query.hide', payload: '3' },
+    { title: '🔧 Báo sự cố',           type: 'oa.query.hide', payload: '5' },
+    { title: '💰 Xem hóa đơn',         type: 'oa.query.hide', payload: '6' },
+  ], profile);
 }
 
 // Gửi card phòng
@@ -119,11 +137,23 @@ async function sendRoomCard(userId, room, profile) {
 
   if (room.images && room.images.length > 0) {
     await saveMessage(userId, profile || {}, 'bot', text);
-    await axios.post(`${BASE_URL}/sendPhoto`, {
-      chat_id: userId,
-      photo: room.images[0],
-      caption: text,
-    }).catch(() => sendText(userId, text, profile));
+    await axios.post(`${ZALO_API}/message`, {
+      recipient: { user_id: userId },
+      message: {
+        attachment: {
+          type: 'template',
+          payload: {
+            template_type: 'media',
+            elements: [{
+              media_type: 'image',
+              url: room.images[0],
+              title: `🏠 Phòng ${room.roomNumber}`,
+              subtitle: text,
+            }],
+          },
+        },
+      },
+    }, { headers: zaloHeaders }).catch(() => sendText(userId, text, profile));
   } else {
     await sendText(userId, text, profile);
   }
