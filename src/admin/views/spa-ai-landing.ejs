@@ -169,6 +169,45 @@
     .zinput { flex:1; background:#f0f2f5; border-radius:18px; padding:5px 11px; font-size:10.5px; color:#999; }
     .zsend { width:26px; height:26px; background:#0068ff; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:11px; }
 
+    /* ── SALES DEMO 3 PHONES ── */
+    .sales-phones { max-width: 1060px; margin: 0 auto; display: grid; grid-template-columns: repeat(3,1fr); gap: 32px; align-items: start; }
+    .sales-phone-col { display: flex; flex-direction: column; align-items: center; gap: 24px; }
+    .sales-step-label { display: flex; align-items: flex-start; gap: 14px; width: 100%; max-width: 280px; }
+    .sales-step-num { font-size: 13px; font-weight: 700; color: var(--gold); border: 1px solid var(--gold3); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-family: 'Segoe UI', sans-serif; margin-top: 2px; }
+    .sales-step-title { font-size: 14px; font-weight: 700; margin-bottom: 5px; }
+    .sales-step-desc  { font-size: 12px; color: var(--muted); line-height: 1.6; font-family: 'Segoe UI', sans-serif; }
+
+    /* Smaller phone variant */
+    .phone-sm { width: 200px; border-radius: 40px; padding: 9px 8px; }
+    .di-sm { width: 76px !important; height: 22px !important; top: 8px !important; }
+    .zb-sm { padding: 7px 10px 0; }
+    .zs-sm { font-size: 7.5px; padding-top: 28px; margin-bottom: 5px; }
+    .zh-sm { padding-bottom: 8px; }
+    .za-sm { width: 26px !important; height: 26px !important; font-size: 12px !important; }
+    .zn-sm { font-size: 11.5px !important; }
+    .zsu-sm{ font-size: 7.5px !important; }
+    .zb-body-sm { padding: 9px; min-height: 290px !important; }
+    .zm-sm  { max-width: 88%; padding: 6px 9px; font-size: 10px; line-height: 1.5; border-radius: 7px; }
+    .zmb-sm { background: white; color: #222; align-self: flex-start; border-radius: 2px 9px 9px 9px; box-shadow: 0 1px 2px rgba(0,0,0,.07); }
+    .zmu-sm { background: #d9f2ff; color: #003d99; align-self: flex-end; border-radius: 9px 2px 9px 9px; }
+    .zbtns-sm { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 5px; }
+    .zbtn-sm { background: var(--ivory2); border: 1px solid var(--ivory3); color: var(--slate); padding: 3px 7px; border-radius: 3px; font-size: 9.5px; font-weight: 600; font-family: 'Segoe UI', sans-serif; }
+    .zbtn-gold { background: var(--charcoal) !important; border-color: var(--charcoal) !important; color: var(--ivory) !important; }
+    .zi-sm { background: white; padding: 6px 9px; display: flex; align-items: center; gap: 5px; border-top: 1px solid #e8e8e8; }
+    .zinput-sm { flex:1; background: #f0f2f5; border-radius: 14px; padding: 5px 10px; font-size: 10px; color: #999; }
+    .zsend-sm  { width: 24px; height: 24px; background: #0068ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 10px; }
+
+    /* Chat bubble appear animation */
+    .chat-bubble { opacity: 0; animation: bubbleIn .4s ease forwards; animation-delay: calc(var(--d, 0s) + .3s); }
+    @keyframes bubbleIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+
+    /* Typing dots */
+    .typing-dots { background: white; align-self: flex-start; padding: 8px 12px; border-radius: 2px 9px 9px 9px; box-shadow: 0 1px 2px rgba(0,0,0,.07); display: flex; gap: 3px; align-items: center; opacity:0; animation: bubbleIn .4s ease forwards; animation-delay: calc(var(--d, 0s) + .3s); }
+    .typing-dots span { width: 5px; height: 5px; background: #bbb; border-radius: 50%; animation: typingBounce 1.2s infinite; }
+    .typing-dots span:nth-child(2) { animation-delay: .2s; }
+    .typing-dots span:nth-child(3) { animation-delay: .4s; }
+    @keyframes typingBounce { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-4px); } }
+
     /* ── TESTIMONIALS ── */
     .testi-grid { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
     .testi-card { background: white; border: 1px solid var(--ivory3); border-top: 2px solid var(--gold); padding: 28px 24px; }
@@ -250,6 +289,13 @@
       .feat-grid { grid-template-columns: 1fr 1fr; }
       .testi-grid { grid-template-columns: 1fr; }
       .demo-wrap { grid-template-columns: 1fr; }
+      .sales-phones { grid-template-columns: 1fr; gap: 48px; }
+      .sales-phone-col { flex-direction: row; align-items: flex-start; gap: 20px; max-width: 480px; margin: 0 auto; }
+      .sales-step-label { flex-direction: column; flex-shrink: 0; width: auto; }
+    }
+    @media (max-width: 520px) {
+      .sales-phone-col { flex-direction: column; align-items: center; }
+      .sales-step-label { flex-direction: row; align-items: flex-start; width: 100%; max-width: 280px; }
     }
     @media (max-width: 600px) {
       nav { padding: 12px 16px; }
@@ -460,6 +506,160 @@
       </div>
     </div>
   </div>
+</section>
+
+<!-- SALES DEMO: 3 PHONES -->
+<section class="sec sec-ivory fade-in" id="sales-demo">
+  <div class="sec-eyebrow">AI chốt sale</div>
+  <div class="sec-title">3 bước AI biến khách hỏi thành khách đặt lịch</div>
+  <div class="sec-rule"></div>
+  <div class="sec-sub">Từ câu hỏi đầu tiên đến lịch hẹn xác nhận — bot xử lý toàn bộ, không cần bạn can thiệp.</div>
+
+  <div class="sales-phones">
+
+    <!-- Phone 1: Giới thiệu gói -->
+    <div class="sales-phone-col">
+      <div class="sales-step-label">
+        <span class="sales-step-num">01</span>
+        <div>
+          <div class="sales-step-title">Giới thiệu gói & ưu đãi</div>
+          <div class="sales-step-desc">AI chủ động giới thiệu dịch vụ nổi bật và combo tiết kiệm ngay khi khách vừa nhắn tin</div>
+        </div>
+      </div>
+      <div class="phone phone-sm">
+        <div class="dynamic-island di-sm"></div>
+        <div class="screen">
+          <div class="zalo-bar zb-sm">
+            <div class="zalo-status zs-sm"><span>9:41</span><span>▲▲ 🔋</span></div>
+            <div class="zalo-header zh-sm">
+              <span style="font-size:13px;opacity:.9">‹</span>
+              <div class="zalo-av za-sm">✦</div>
+              <div class="zalo-info">
+                <div class="zname zn-sm">Beauty Spa AI</div>
+                <div class="zsub zsu-sm">● Đang hoạt động</div>
+              </div>
+            </div>
+          </div>
+          <div class="zalo-body zb-body-sm">
+            <div class="zm-sm zmb-sm chat-bubble" style="--d:.1s">Chào bạn! ✦ Tôi là trợ lý AI của Beauty Spa — có thể giúp bạn đặt lịch, xem dịch vụ và nhận ưu đãi 24/7.</div>
+            <div class="zm-sm zmb-sm chat-bubble" style="--d:.4s">
+              🌟 <strong>ƯU ĐÃI THÁNG NÀY</strong><br>
+              ✨ Combo Massage + Facial<br>
+              <span style="text-decoration:line-through;color:#aaa;font-size:10px">770.000đ</span> → <strong>620.000đ</strong><br>
+              💅 Nail + Gội đầu: <strong>380.000đ</strong><br>
+              🌸 Giảm 15% dịch vụ đầu tiên
+              <div class="zbtns-sm">
+                <span class="zbtn-sm zbtn-gold">✅ Đặt lịch ngay</span>
+                <span class="zbtn-sm">💆 Xem tất cả</span>
+              </div>
+            </div>
+            <div class="zm-sm zmu-sm chat-bubble" style="--d:.7s">Có gói nào phù hợp cho da mặt không?</div>
+            <div class="typing-dots chat-bubble" style="--d:.95s"><span></span><span></span><span></span></div>
+          </div>
+          <div class="zalo-input zi-sm">
+            <div class="zinput-sm">Nhắn tin...</div>
+            <div class="zsend-sm">➤</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phone 2: Tư vấn & xử lý objection -->
+    <div class="sales-phone-col">
+      <div class="sales-step-label">
+        <span class="sales-step-num">02</span>
+        <div>
+          <div class="sales-step-title">Tư vấn & xử lý phản đối</div>
+          <div class="sales-step-desc">Khách phân vân về giá? AI so sánh giá trị, gợi ý combo thông minh và tạo urgency tự nhiên</div>
+        </div>
+      </div>
+      <div class="phone phone-sm">
+        <div class="dynamic-island di-sm"></div>
+        <div class="screen">
+          <div class="zalo-bar zb-sm">
+            <div class="zalo-status zs-sm"><span>9:43</span><span>▲▲ 🔋</span></div>
+            <div class="zalo-header zh-sm">
+              <span style="font-size:13px;opacity:.9">‹</span>
+              <div class="zalo-av za-sm">✦</div>
+              <div class="zalo-info">
+                <div class="zname zn-sm">Beauty Spa AI</div>
+                <div class="zsub zsu-sm">● Đang hoạt động</div>
+              </div>
+            </div>
+          </div>
+          <div class="zalo-body zb-body-sm">
+            <div class="zm-sm zmu-sm chat-bubble" style="--d:.1s">Facial giá hơi cao, có gói rẻ hơn không?</div>
+            <div class="zm-sm zmb-sm chat-bubble" style="--d:.4s">Mình hiểu! 😊 Facial 420K nghe có vẻ nhiều, nhưng tính ra chỉ <strong>7.000đ/phút</strong> cho 60 phút chăm sóc chuyên sâu — rẻ hơn một ly cà phê.<br><br>💡 Gợi ý cho bạn:<br>✨ Facial đơn: <strong>420.000đ</strong><br>🌟 Facial + Tẩy da chết: <strong>680.000đ</strong> (tiết kiệm 120K)<br><br>Khách đặt combo thường thấy da sáng hơn hẳn sau buổi đầu tiên!</div>
+            <div class="zm-sm zmu-sm chat-bubble" style="--d:.8s">Combo nghe hay đấy...</div>
+            <div class="zm-sm zmb-sm chat-bubble" style="--d:1.1s">
+              🔥 Combo đang rất hot tháng này! Lịch cuối tuần còn <strong>3 chỗ trống</strong> thôi.<br>Bạn muốn mình giữ chỗ ngay không?
+              <div class="zbtns-sm">
+                <span class="zbtn-sm zbtn-gold">📅 Giữ chỗ ngay</span>
+              </div>
+            </div>
+          </div>
+          <div class="zalo-input zi-sm">
+            <div class="zinput-sm">Nhắn tin...</div>
+            <div class="zsend-sm">➤</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phone 3: Chốt sale -->
+    <div class="sales-phone-col">
+      <div class="sales-step-label">
+        <span class="sales-step-num">03</span>
+        <div>
+          <div class="sales-step-title">Chốt sale & upsell</div>
+          <div class="sales-step-desc">Xác nhận đặt lịch xong, AI ngay lập tức gợi ý thêm dịch vụ bổ sung cùng buổi</div>
+        </div>
+      </div>
+      <div class="phone phone-sm">
+        <div class="dynamic-island di-sm"></div>
+        <div class="screen">
+          <div class="zalo-bar zb-sm">
+            <div class="zalo-status zs-sm"><span>9:46</span><span>▲▲ 🔋</span></div>
+            <div class="zalo-header zh-sm">
+              <span style="font-size:13px;opacity:.9">‹</span>
+              <div class="zalo-av za-sm">✦</div>
+              <div class="zalo-info">
+                <div class="zname zn-sm">Beauty Spa AI</div>
+                <div class="zsub zsu-sm">● Đang hoạt động</div>
+              </div>
+            </div>
+          </div>
+          <div class="zalo-body zb-body-sm">
+            <div class="zm-sm zmb-sm chat-bubble" style="--d:.1s">
+              🎉 <strong>ĐẶT LỊCH THÀNH CÔNG!</strong><br>
+              👤 Lan Anh · 0901 234 567<br>
+              ✨ Facial + Tẩy da chết (Combo)<br>
+              📅 Thứ 7 · 14:00<br>
+              📍 Beauty Spa · Q.3<br>
+              <span style="font-size:10px;color:#888">Nhắc lịch trước 1 tiếng tự động 🌸</span>
+            </div>
+            <div class="zm-sm zmb-sm chat-bubble" style="--d:.5s">
+              🎁 <strong>THÊM CHO BUỔI NÀY:</strong><br>
+              Gội đầu dưỡng sinh sau khi làm xong<br>
+              <span style="text-decoration:line-through;color:#aaa;font-size:10px">180.000đ</span> → chỉ <strong>144.000đ</strong> (giảm 20%)<br>
+              <span style="font-size:10px;color:#888">Offer này chỉ có khi đặt cùng lịch hôm nay!</span>
+              <div class="zbtns-sm">
+                <span class="zbtn-sm zbtn-gold">✅ Thêm ngay</span>
+                <span class="zbtn-sm">Không cảm ơn</span>
+              </div>
+            </div>
+            <div class="zm-sm zmu-sm chat-bubble" style="--d:.9s">Thêm ngay đi!</div>
+            <div class="zm-sm zmb-sm chat-bubble" style="--d:1.2s">Tuyệt vời! ✦ Đã cập nhật lịch hẹn cho bạn. Hẹn gặp Lan Anh thứ 7 nhé! 💆‍♀️</div>
+          </div>
+          <div class="zalo-input zi-sm">
+            <div class="zinput-sm">Nhắn tin...</div>
+            <div class="zsend-sm">➤</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.sales-phones -->
 </section>
 
 <!-- TESTIMONIALS -->
