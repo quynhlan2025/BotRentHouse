@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tính tiền phòng</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #1a1a1a; }
+
+    nav {
+      background: #1a5c35; color: white; padding: 0 24px; height: 56px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo { font-size: 17px; font-weight: 800; }
+    .nav-links { display: flex; gap: 6px; }
+    .nav-links a {
+      color: rgba(255,255,255,.8); text-decoration: none; font-size: 13px;
+      padding: 6px 12px; border-radius: 7px; transition: background .15s;
+    }
+    .nav-links a:hover, .nav-links a.active { background: rgba(255,255,255,.15); color: white; }
+
+    .main { max-width: 1200px; margin: 0 auto; padding: 24px 20px; }
+    .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+    .page-header h1 { font-size: 22px; font-weight: 800; }
+    .page-header h1 span { color: #2c7a4b; }
+
+    .flash { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; border-radius: 10px; padding: 11px 16px; margin-bottom: 20px; font-size: 14px; }
+
+    /* MONTH SELECTOR */
+    .month-bar { background: white; border-radius: 14px; border: 1px solid #eee; padding: 16px 20px; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .month-bar label { font-size: 14px; font-weight: 600; }
+    .month-bar select, .month-bar input[type=number] {
+      padding: 7px 12px; border: 1px solid #e5e7eb; border-radius: 8px;
+      font-size: 14px; background: white;
+    }
+    .btn-filter { background: #2c7a4b; color: white; border: none; padding: 8px 18px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+
+    /* STATS */
+    .stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 20px; }
+    .stat { background: white; border-radius: 14px; padding: 16px 20px; border: 1px solid #eee; text-align: center; }
+    .stat .num { font-size: 24px; font-weight: 900; }
+    .stat .lbl { font-size: 12px; color: #888; margin-top: 3px; }
+    .num-total  { color: #1a1a1a; }
+    .num-unpaid { color: #f59e0b; }
+    .num-paid   { color: #10b981; }
+    .num-sent   { color: #3b82f6; }
+
+    /* GRID ROOMS */
+    .rooms-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; }
+
+    .room-card { background: white; border-radius: 16px; border: 1px solid #eee; overflow: hidden; transition: box-shadow .2s; }
+    .room-card:hover { box-shadow: 0 6px 24px rgba(0,0,0,.08); }
+    .room-card.paid   { border-color: #10b981; }
+    .room-card.unpaid { border-color: #f59e0b; }
+
+    .room-card-header {
+      padding: 14px 18px; display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid #f3f4f6; background: #fafafa;
+    }
+    .room-num { font-size: 17px; font-weight: 800; }
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+    .badge-unpaid { background: #fef9c3; color: #854d0e; }
+    .badge-paid   { background: #d1fae5; color: #065f46; }
+    .badge-none   { background: #f1f5f9; color: #64748b; }
+
+    /* FORM */
+    form.bill-form { padding: 16px 18px; }
+    .form-section { margin-bottom: 14px; }
+    .form-section-title { font-size: 11px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 6px; }
+    .form-row.full { grid-template-columns: 1fr; }
+    .form-row.three { grid-template-columns: 1fr 1fr 1fr; }
+    .f-group { display: flex; flex-direction: column; gap: 3px; }
+    .f-group label { font-size: 11px; color: #888; }
+    .f-group input {
+      padding: 7px 10px; border: 1px solid #e5e7eb; border-radius: 8px;
+      font-size: 13px; width: 100%; background: white;
+    }
+    .f-group input:focus { outline: none; border-color: #2c7a4b; }
+    .total-row { background: #f0fdf4; border-radius: 10px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; margin: 12px 0 14px; }
+    .total-label { font-size: 13px; font-weight: 700; color: #166534; }
+    .total-amount { font-size: 20px; font-weight: 900; color: #166534; }
+
+    .btn-row { display: flex; gap: 7px; flex-wrap: wrap; }
+    .btn { padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; border: none; cursor: pointer; }
+    .btn-save   { background: #2c7a4b; color: white; }
+    .btn-save:hover { background: #235e3a; }
+    .btn-send   { background: #0068ff; color: white; }
+    .btn-send:hover { background: #0052cc; }
+    .btn-paid   { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
+    .btn-del    { background: #fee2e2; color: #991b1b; margin-left: auto; }
+    .sent-badge { font-size: 11px; color: #3b82f6; }
+
+    @media (max-width: 768px) {
+      .stats { grid-template-columns: repeat(2,1fr); }
+      .rooms-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">💰 Tính tiền phòng</div>
+  <div class="nav-links">
+    <a href="/admin">🏠 Phòng</a>
+    <a href="/zalo-inbox">💬 Zalo Inbox</a>
+    <a href="/admin/maintenance">🔧 Sự cố</a>
+    <a href="/admin/billing" class="active">💰 Tính tiền</a>
+  </div>
+</nav>
+
+<div class="main">
+  <div class="page-header">
+    <h1>Tính tiền <span>Tháng <%= month %>/<%= year %></span></h1>
+  </div>
+
+  <% if (msg) { %><div class="flash">✅ <%= msg %></div><% } %>
+
+  <!-- CHỌN THÁNG -->
+  <form class="month-bar" method="GET" action="/admin/billing">
+    <label>Tháng:</label>
+    <select name="month">
+      <% for(let m=1; m<=12; m++) { %>
+        <option value="<%= m %>" <%= m===month?'selected':'' %>>Tháng <%= m %></option>
+      <% } %>
+    </select>
+    <label>Năm:</label>
+    <input type="number" name="year" value="<%= year %>" style="width:90px">
+    <button type="submit" class="btn-filter">Xem</button>
+  </form>
+
+  <!-- STATS -->
+  <%
+    const totalBills = bills.length;
+    const unpaidCount = bills.filter(b=>b.status==='unpaid').length;
+    const paidCount   = bills.filter(b=>b.status==='paid').length;
+    const sentCount   = bills.filter(b=>b.sentAt).length;
+    const totalMoney  = bills.reduce((s,b)=>s+b.totalAmount,0);
+  %>
+  <div class="stats">
+    <div class="stat"><div class="num num-total"><%= totalBills %></div><div class="lbl">Phòng có bill</div></div>
+    <div class="stat"><div class="num num-unpaid"><%= unpaidCount %></div><div class="lbl">⏳ Chưa thu</div></div>
+    <div class="stat"><div class="num num-paid"><%= paidCount %></div><div class="lbl">✅ Đã thu</div></div>
+    <div class="stat"><div class="num num-sent" style="font-size:16px"><%= totalMoney.toLocaleString('vi-VN') %>đ</div><div class="lbl">💵 Tổng tháng này</div></div>
+  </div>
+
+  <!-- DANH SÁCH PHÒNG -->
+  <div class="rooms-grid">
+    <% rooms.forEach(room => {
+      const bill = billMap[room.roomNumber];
+      const eUsed = bill ? Math.max(0, bill.electricEnd - bill.electricStart) : 0;
+      const wUsed = bill ? Math.max(0, bill.waterEnd - bill.waterStart) : 0;
+    %>
+    <div class="room-card <%= bill ? bill.status : '' %>">
+      <div class="room-card-header">
+        <div class="room-num">Phòng <%= room.roomNumber %></div>
+        <% if (bill) { %>
+          <span class="badge badge-<%= bill.status %>"><%= bill.status==='paid' ? '✅ Đã thu' : '⏳ Chưa thu' %></span>
+          <% if (bill.sentAt) { %><span class="sent-badge">📤 Đã gửi Zalo</span><% } %>
+        <% } else { %>
+          <span class="badge badge-none">Chưa nhập</span>
+        <% } %>
+      </div>
+
+      <form class="bill-form" method="POST" action="/admin/billing/save">
+        <input type="hidden" name="roomNumber" value="<%= room.roomNumber %>">
+        <input type="hidden" name="month" value="<%= month %>">
+        <input type="hidden" name="year"  value="<%= year %>">
+
+        <!-- THÔNG TIN KHÁCH -->
+        <div class="form-section">
+          <div class="form-section-title">👤 Khách thuê</div>
+          <div class="form-row three">
+            <div class="f-group">
+              <label>Tên khách</label>
+              <input type="text" name="tenantName" value="<%= bill?.tenantName || '' %>" placeholder="Nguyễn Văn A">
+            </div>
+            <div class="f-group">
+              <label>SĐT</label>
+              <input type="text" name="tenantPhone" value="<%= bill?.tenantPhone || '' %>" placeholder="0901234567">
+            </div>
+            <div class="f-group">
+              <label>Zalo ID (để gửi bill)</label>
+              <input type="text" name="tenantZaloId" value="<%= bill?.tenantZaloId || '' %>" placeholder="Zalo user ID">
+            </div>
+          </div>
+        </div>
+
+        <!-- TIỀN PHÒNG -->
+        <div class="form-section">
+          <div class="form-section-title">🏠 Tiền phòng</div>
+          <div class="form-row full">
+            <div class="f-group">
+              <label>Tiền phòng (đ/tháng)</label>
+              <input type="number" name="rentAmount" value="<%= bill?.rentAmount || room.price || '' %>" placeholder="2500000">
+            </div>
+          </div>
+        </div>
+
+        <!-- ĐIỆN -->
+        <div class="form-section">
+          <div class="form-section-title">⚡ Điện</div>
+          <div class="form-row three">
+            <div class="f-group">
+              <label>Chỉ số đầu (kWh)</label>
+              <input type="number" name="electricStart" value="<%= bill?.electricStart ?? '' %>" placeholder="1200">
+            </div>
+            <div class="f-group">
+              <label>Chỉ số cuối (kWh)</label>
+              <input type="number" name="electricEnd" value="<%= bill?.electricEnd ?? '' %>" placeholder="1340"
+                oninput="calcTotal(this.closest('form'))">
+            </div>
+            <div class="f-group">
+              <label>Giá điện (đ/kWh)</label>
+              <input type="number" name="electricPrice" value="<%= bill?.electricPrice ?? 3500 %>" placeholder="3500"
+                oninput="calcTotal(this.closest('form'))">
+            </div>
+          </div>
+          <% if (bill) { %><div style="font-size:12px;color:#888;margin-top:2px">Dùng: <%= eUsed %> kWh = <%= (eUsed*(bill.electricPrice||3500)).toLocaleString('vi-VN') %>đ</div><% } %>
+        </div>
+
+        <!-- NƯỚC -->
+        <div class="form-section">
+          <div class="form-section-title">💧 Nước</div>
+          <div class="form-row three">
+            <div class="f-group">
+              <label>Chỉ số đầu (m³)</label>
+              <input type="number" name="waterStart" value="<%= bill?.waterStart ?? '' %>" placeholder="50">
+            </div>
+            <div class="f-group">
+              <label>Chỉ số cuối (m³)</label>
+              <input type="number" name="waterEnd" value="<%= bill?.waterEnd ?? '' %>" placeholder="54"
+                oninput="calcTotal(this.closest('form'))">
+            </div>
+            <div class="f-group">
+              <label>Giá nước (đ/m³)</label>
+              <input type="number" name="waterPrice" value="<%= bill?.waterPrice ?? 15000 %>" placeholder="15000"
+                oninput="calcTotal(this.closest('form'))">
+            </div>
+          </div>
+          <% if (bill) { %><div style="font-size:12px;color:#888;margin-top:2px">Dùng: <%= wUsed %> m³ = <%= (wUsed*(bill.waterPrice||15000)).toLocaleString('vi-VN') %>đ</div><% } %>
+        </div>
+
+        <!-- PHÍ KHÁC -->
+        <div class="form-section">
+          <div class="form-section-title">📌 Phí khác</div>
+          <div class="form-row three">
+            <div class="f-group">
+              <label>Internet (đ)</label>
+              <input type="number" name="internetFee" value="<%= bill?.internetFee ?? '' %>" placeholder="100000"
+                oninput="calcTotal(this.closest('form'))">
+            </div>
+            <div class="f-group">
+              <label>Gửi xe (đ)</label>
+              <input type="number" name="parkingFee" value="<%= bill?.parkingFee ?? '' %>" placeholder="100000"
+                oninput="calcTotal(this.closest('form'))">
+            </div>
+            <div class="f-group">
+              <label>Khác (đ)</label>
+              <input type="number" name="otherFee" value="<%= bill?.otherFee ?? '' %>" placeholder="0"
+                oninput="calcTotal(this.closest('form'))">
+            </div>
+          </div>
+          <div class="form-row full">
+            <div class="f-group">
+              <label>Ghi chú phí khác</label>
+              <input type="text" name="otherFeeNote" value="<%= bill?.otherFeeNote || '' %>" placeholder="Vệ sinh, rác...">
+            </div>
+          </div>
+        </div>
+
+        <!-- TỔNG -->
+        <div class="total-row">
+          <span class="total-label">💵 TỔNG CỘNG</span>
+          <span class="total-amount" id="total-<%= room.roomNumber %>">
+            <%= bill ? bill.totalAmount.toLocaleString('vi-VN') + 'đ' : '—' %>
+          </span>
+        </div>
+
+        <div class="btn-row">
+          <button type="submit" class="btn btn-save">💾 Lưu</button>
+          <% if (bill) { %>
+            <% if (bill.tenantZaloId) { %>
+              <button type="button" class="btn btn-send"
+                onclick="sendBill('<%= bill._id %>')">📤 Gửi Zalo</button>
+            <% } %>
+            <% if (bill.status === 'unpaid') { %>
+              <button type="button" class="btn btn-paid"
+                onclick="markPaid('<%= bill._id %>')">✅ Đã thu tiền</button>
+            <% } %>
+            <button type="button" class="btn btn-del"
+              onclick="deleteBill('<%= bill._id %>')">🗑</button>
+          <% } %>
+        </div>
+      </form>
+    </div>
+    <% }) %>
+  </div>
+</div>
+
+<script>
+function calcTotal(form) {
+  const v = n => parseFloat(form.querySelector(`[name=${n}]`)?.value) || 0;
+  const eUsed = Math.max(0, v('electricEnd') - v('electricStart'));
+  const wUsed = Math.max(0, v('waterEnd')    - v('waterStart'));
+  const total = v('rentAmount')
+    + eUsed * v('electricPrice')
+    + wUsed * v('waterPrice')
+    + v('internetFee') + v('parkingFee') + v('otherFee');
+  const room = form.querySelector('[name=roomNumber]').value;
+  const el = document.getElementById('total-' + room);
+  if (el) el.textContent = total.toLocaleString('vi-VN') + 'đ';
+}
+
+function sendBill(id) {
+  if (!confirm('Gửi hóa đơn cho khách qua Zalo?')) return;
+  const f = document.createElement('form');
+  f.method = 'POST'; f.action = '/admin/billing/' + id + '/send';
+  document.body.appendChild(f); f.submit();
+}
+function markPaid(id) {
+  if (!confirm('Đánh dấu đã thu tiền phòng này?')) return;
+  const f = document.createElement('form');
+  f.method = 'POST'; f.action = '/admin/billing/' + id + '/paid';
+  document.body.appendChild(f); f.submit();
+}
+function deleteBill(id) {
+  if (!confirm('Xóa bill này?')) return;
+  const f = document.createElement('form');
+  f.method = 'POST'; f.action = '/admin/billing/' + id + '/delete';
+  document.body.appendChild(f); f.submit();
+}
+</script>
+</body>
+</html>

@@ -7,7 +7,8 @@ const Room = require('../models/Room');
 const Booking = require('../models/Booking');
 const ZaloConversation = require('../models/ZaloConversation');
 const MaintenanceRequest = require('../models/MaintenanceRequest');
-const { handleZaloMessage } = require('../zalo/zaloBot');
+const RoomBill = require('../models/RoomBill');
+const { handleZaloMessage, sendBillToTenant } = require('../zalo/zaloBot');
 
 const app = express();
 app.use(express.json());
@@ -255,6 +256,68 @@ app.post('/admin/maintenance/:id/status', async (req, res) => {
 app.post('/admin/maintenance/:id/delete', async (req, res) => {
   await MaintenanceRequest.findByIdAndDelete(req.params.id);
   res.redirect('/admin/maintenance?msg=Đã xóa!');
+});
+
+// ── BILLING ───────────────────────────────────────────────────────────────────
+app.get('/admin/billing', async (req, res) => {
+  const now = new Date();
+  const month = parseInt(req.query.month) || now.getMonth() + 1;
+  const year  = parseInt(req.query.year)  || now.getFullYear();
+  const rooms = await Room.find().sort({ roomNumber: 1 });
+  const bills = await RoomBill.find({ month, year }).sort({ roomNumber: 1 });
+  const billMap = {};
+  bills.forEach(b => { billMap[b.roomNumber] = b; });
+  res.render('billing', { rooms, bills, billMap, month, year, msg: req.query.msg || '' });
+});
+
+app.post('/admin/billing/save', async (req, res) => {
+  const { roomNumber, tenantName, tenantZaloId, tenantPhone, month, year,
+          rentAmount, electricStart, electricEnd, electricPrice,
+          waterStart, waterEnd, waterPrice,
+          internetFee, parkingFee, otherFee, otherFeeNote } = req.body;
+
+  const eUsed = Math.max(0, electricEnd - electricStart);
+  const wUsed = Math.max(0, waterEnd - waterStart);
+  const totalAmount =
+    (+rentAmount || 0) +
+    eUsed * (+electricPrice || 3500) +
+    wUsed * (+waterPrice || 15000) +
+    (+internetFee || 0) +
+    (+parkingFee  || 0) +
+    (+otherFee    || 0);
+
+  await RoomBill.findOneAndUpdate(
+    { roomNumber, month: +month, year: +year },
+    { roomNumber, tenantName, tenantZaloId, tenantPhone,
+      month: +month, year: +year,
+      rentAmount: +rentAmount || 0,
+      electricStart: +electricStart || 0, electricEnd: +electricEnd || 0, electricPrice: +electricPrice || 3500,
+      waterStart: +waterStart || 0, waterEnd: +waterEnd || 0, waterPrice: +waterPrice || 15000,
+      internetFee: +internetFee || 0, parkingFee: +parkingFee || 0,
+      otherFee: +otherFee || 0, otherFeeNote,
+      totalAmount },
+    { upsert: true, new: true }
+  );
+  res.redirect(`/admin/billing?month=${month}&year=${year}&msg=Đã lưu phòng ${roomNumber}!`);
+});
+
+app.post('/admin/billing/:id/paid', async (req, res) => {
+  const bill = await RoomBill.findByIdAndUpdate(req.params.id, { status: 'paid' }, { new: true });
+  res.redirect(`/admin/billing?month=${bill.month}&year=${bill.year}&msg=Đã đánh dấu đã thu!`);
+});
+
+app.post('/admin/billing/:id/send', async (req, res) => {
+  const bill = await RoomBill.findById(req.params.id);
+  if (!bill) return res.redirect('/admin/billing?msg=Không tìm thấy!');
+  if (!bill.tenantZaloId) return res.redirect(`/admin/billing?month=${bill.month}&year=${bill.year}&msg=Chưa có Zalo ID khách!`);
+  await sendBillToTenant(bill);
+  await RoomBill.findByIdAndUpdate(bill._id, { sentAt: new Date() });
+  res.redirect(`/admin/billing?month=${bill.month}&year=${bill.year}&msg=Đã gửi bill phòng ${bill.roomNumber}!`);
+});
+
+app.post('/admin/billing/:id/delete', async (req, res) => {
+  const bill = await RoomBill.findByIdAndDelete(req.params.id);
+  res.redirect(`/admin/billing?month=${bill?.month}&year=${bill?.year}&msg=Đã xóa!`);
 });
 
 module.exports = app;

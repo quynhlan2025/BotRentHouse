@@ -338,4 +338,28 @@ async function handleZaloMessage(event) {
   }
 }
 
-module.exports = { handleZaloMessage };
+// Gửi bill tiền phòng cho khách qua Zalo
+async function sendBillToTenant(bill) {
+  const fmt = n => (+n || 0).toLocaleString('vi-VN');
+  const eUsed = Math.max(0, bill.electricEnd - bill.electricStart);
+  const wUsed = Math.max(0, bill.waterEnd - bill.waterStart);
+
+  const text =
+    `💰 HÓA ĐƠN TIỀN PHÒNG\n` +
+    `📅 Tháng ${bill.month}/${bill.year} — Phòng ${bill.roomNumber}\n` +
+    `━━━━━━━━━━━━━━━━━━\n` +
+    `🏠 Tiền phòng:       ${fmt(bill.rentAmount)}đ\n` +
+    `⚡ Điện (${eUsed} kWh × ${fmt(bill.electricPrice)}đ): ${fmt(eUsed * bill.electricPrice)}đ\n` +
+    `💧 Nước (${wUsed} m³ × ${fmt(bill.waterPrice)}đ):  ${fmt(wUsed * bill.waterPrice)}đ\n` +
+    (bill.internetFee ? `📶 Internet:         ${fmt(bill.internetFee)}đ\n` : '') +
+    (bill.parkingFee  ? `🛵 Gửi xe:           ${fmt(bill.parkingFee)}đ\n`  : '') +
+    (bill.otherFee    ? `📌 ${bill.otherFeeNote || 'Khác'}:  ${fmt(bill.otherFee)}đ\n` : '') +
+    `━━━━━━━━━━━━━━━━━━\n` +
+    `💵 TỔNG:             ${fmt(bill.totalAmount)}đ\n\n` +
+    `📞 Liên hệ chủ nhà: ${process.env.LANDLORD_PHONE || '0901 234 567'}\n` +
+    `⏰ Hạn thanh toán: trước ngày 5 tháng ${bill.month + 1 > 12 ? 1 : bill.month + 1}`;
+
+  await sendText(bill.tenantZaloId, text, {});
+}
+
+module.exports = { handleZaloMessage, sendBillToTenant };
