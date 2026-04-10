@@ -66,51 +66,60 @@
     .step-content p { color: #666; font-size: 14px; line-height: 1.6; }
 
     /* ── DEMO CHAT ── */
-    .demo { padding: 70px 20px; background: white; }
-    .demo-container { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
-    .demo-text h2 { font-size: clamp(20px, 2.5vw, 28px); font-weight: 800; margin-bottom: 16px; }
-    .demo-text p { color: #666; line-height: 1.7; margin-bottom: 12px; }
-    .demo-text ul { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
-    .demo-text ul li { display: flex; align-items: center; gap: 10px; font-size: 15px; }
-    .demo-text ul li::before { content: '✅'; }
-
+    .demo { padding: 70px 20px; background: #f9f9f9; }
+    .demo-scenarios { max-width: 1080px; margin: 0 auto; display: grid; grid-template-columns: repeat(3,1fr); gap: 28px; }
+    .scenario-card {
+      background: white; border-radius: 20px; overflow: hidden;
+      border: 1px solid #eee;
+      box-shadow: 0 4px 20px rgba(0,0,0,.06);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .scenario-card:hover { transform: translateY(-6px); box-shadow: 0 16px 40px rgba(0,0,0,.12); }
+    .scenario-header { padding: 18px 20px 14px; }
+    .scenario-badge {
+      display: inline-block; padding: 4px 12px; border-radius: 20px;
+      font-size: 11px; font-weight: 700; margin-bottom: 10px;
+    }
+    .sb-1 { background: #dcfce7; color: #166534; }
+    .sb-2 { background: #fef9c3; color: #854d0e; }
+    .sb-3 { background: #ede9fe; color: #5b21b6; }
+    .scenario-title { font-size: 15px; font-weight: 800; color: #1a1a1a; margin-bottom: 4px; }
+    .scenario-sub   { font-size: 12px; color: #888; line-height: 1.5; }
     /* ── iPhone / Zalo mockup ── */
     .phone-wrap {
       display: flex; justify-content: center; align-items: center;
-      background: linear-gradient(135deg, #1a5c35 0%, #2c7a4b 60%, #38a169 100%);
-      border-radius: 28px; padding: 28px 24px;
-      box-shadow: 0 24px 60px rgba(44,122,75,.35);
+      background: linear-gradient(160deg, #1a5c35 0%, #2c7a4b 55%, #38a169 100%);
+      padding: 20px 16px 24px;
     }
     .iphone {
-      background: #1c1c1e; border-radius: 44px; padding: 10px;
-      width: 230px;
-      box-shadow: 0 0 0 1px #3a3a3c, 0 16px 40px rgba(0,0,0,.5);
+      background: #1c1c1e; border-radius: 38px; padding: 8px;
+      width: 188px;
+      box-shadow: 0 0 0 1px #3a3a3c, 0 12px 32px rgba(0,0,0,.55);
       position: relative;
     }
-    .iphone-screen { background: #ece5dd; border-radius: 36px; overflow: hidden; position: relative; }
-    /* Dynamic Island */
+    .iphone-screen { background: #ece5dd; border-radius: 32px; overflow: hidden; position: relative; }
     .dynamic-island {
-      position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
-      width: 72px; height: 22px; background: #000; border-radius: 14px; z-index: 10;
+      position: absolute; top: 7px; left: 50%; transform: translateX(-50%);
+      width: 60px; height: 18px; background: #000; border-radius: 12px; z-index: 10;
     }
-    /* Zalo header bar */
-    .z-bar { background: #0068ff; color: white; padding: 34px 10px 8px; }
-    .z-row { display: flex; align-items: center; gap: 7px; }
+    .z-bar { background: #0068ff; color: white; padding: 28px 9px 7px; }
+    .z-row { display: flex; align-items: center; gap: 6px; }
     .z-av {
-      width: 26px; height: 26px; background: white; border-radius: 50%;
+      width: 22px; height: 22px; background: white; border-radius: 50%;
       display: flex; align-items: center; justify-content: center; flex-shrink: 0;
     }
-    .z-logo { font-size: 12px; font-weight: 900; font-style: italic; color: #0068ff; }
-    .z-name { font-size: 11px; font-weight: 700; }
-    .z-sub  { font-size: 8px; opacity: .8; }
-    /* Chat body */
-    .z-body { background: #f0f2f5; padding: 8px; display: flex; flex-direction: column; gap: 5px; min-height: 220px; }
-    .zm { max-width: 86%; padding: 6px 9px; font-size: 10px; line-height: 1.45; border-radius: 8px; }
-    .zmb { background: white; align-self: flex-start; border-radius: 2px 8px 8px 8px; box-shadow: 0 1px 2px rgba(0,0,0,.08); }
-    .zmu { background: #d9f2ff; color: #003d99; align-self: flex-end; border-radius: 8px 2px 8px 8px; }
-    .zmt { font-size: 8px; color: #aaa; margin-top: 2px; }
+    .z-logo { font-size: 10px; font-weight: 900; font-style: italic; color: #0068ff; }
+    .z-name { font-size: 10px; font-weight: 700; }
+    .z-sub  { font-size: 7.5px; opacity: .8; }
+    .z-body { background: #f0f2f5; padding: 7px; display: flex; flex-direction: column; gap: 5px; min-height: 190px; }
+    .zm { max-width: 88%; padding: 5px 8px; font-size: 9.5px; line-height: 1.45; border-radius: 7px; }
+    .zmb { background: white; align-self: flex-start; border-radius: 2px 7px 7px 7px; box-shadow: 0 1px 2px rgba(0,0,0,.07); }
+    .zmu { background: #d9f2ff; color: #003d99; align-self: flex-end; border-radius: 7px 2px 7px 7px; }
+    .zmt { font-size: 7.5px; color: #aaa; margin-top: 2px; }
     .zmbtns { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 4px; }
-    .zmbtn { background: #e8f4ee; border: 1px solid #2c7a4b; color: #1a5c35; padding: 2px 7px; border-radius: 8px; font-size: 9px; font-weight: 600; }
+    .zmbtn { background: #e8f4ee; border: 1px solid #2c7a4b; color: #1a5c35; padding: 2px 6px; border-radius: 7px; font-size: 8.5px; font-weight: 600; }
+    .zm-ai { background: #f0f9ff; align-self: flex-start; border-radius: 2px 7px 7px 7px; box-shadow: 0 1px 2px rgba(0,0,0,.07); border-left: 2px solid #2c7a4b; }
+    @media (max-width: 960px) { .demo-scenarios { grid-template-columns: 1fr; max-width: 380px; } }
 
     /* ── PRICING ── */
     .pricing { padding: 70px 20px; background: #f9f9f9; }
@@ -273,69 +282,156 @@
 <!-- DEMO CHAT -->
 <section class="demo" id="demo">
   <div class="section-title">
-    <h2>Xem trợ lý ảo hoạt động</h2>
-    <p>Giao diện thực tế khi khách nhắn tin</p>
+    <h2>Xem trợ lý ảo AI hoạt động</h2>
+    <p>3 tình huống thực tế — trợ lý ảo xử lý thông minh, chủ trọ không cần trực</p>
   </div>
-  <div class="demo-container">
-    <div class="demo-text">
-      <h2>Khách tự tìm phòng, bạn không cần trực</h2>
-      <p>Trợ lý ảo hiểu yêu cầu của khách và gợi ý phòng phù hợp ngay lập tức. Khách hỏi giá, hỏi còn phòng không, xem ảnh — tất cả được xử lý tự động.</p>
-      <ul>
-        <li>Trả lời trong vòng 1 giây</li>
-        <li>Hiển thị ảnh phòng trực tiếp</li>
-        <li>Lọc phòng theo ngân sách</li>
-        <li>Cung cấp thông tin liên hệ ngay</li>
-      </ul>
-    </div>
-    <div class="phone-wrap">
-      <div class="iphone">
-        <div class="iphone-screen">
-          <div class="dynamic-island"></div>
-          <!-- Zalo header -->
-          <div class="z-bar">
-            <div class="z-row">
-              <div class="z-av"><div class="z-logo">Z</div></div>
-              <div>
-                <div class="z-name">🏠 Nhà trọ quận 3</div>
-                <div class="z-sub">🟢 Đang hoạt động</div>
+  <div class="demo-scenarios">
+
+    <!-- TÌNH HUỐNG 1: AI hiểu ngôn ngữ tự nhiên -->
+    <div class="scenario-card">
+      <div class="scenario-header">
+        <div class="scenario-badge sb-1">🧠 AI hiểu tiếng tự nhiên</div>
+        <div class="scenario-title">Khách nhắn kiểu gì cũng hiểu</div>
+        <div class="scenario-sub">Không cần bấm menu — nhắn thoải mái như nói chuyện</div>
+      </div>
+      <div class="phone-wrap">
+        <div class="iphone">
+          <div class="iphone-screen">
+            <div class="dynamic-island"></div>
+            <div class="z-bar">
+              <div class="z-row">
+                <div class="z-av"><div class="z-logo">Z</div></div>
+                <div>
+                  <div class="z-name">🏠 Nhà trọ quận 3</div>
+                  <div class="z-sub">🟢 Đang hoạt động</div>
+                </div>
               </div>
             </div>
-          </div>
-          <!-- Chat body -->
-          <div class="z-body">
-            <div class="zm zmb">
-              Xin chào! 👋 Tôi là trợ lý ảo Nhà trọ quận 3.<br>Chọn mục bạn cần:
-              <div class="zmbtns">
-                <span class="zmbtn">📋 Danh sách phòng</span>
-                <span class="zmbtn">🔍 Tìm theo giá</span>
-                <span class="zmbtn">📞 Liên hệ</span>
+            <div class="z-body">
+              <div class="zm zmu">mình cần phòng tầm 2-3tr, có chỗ để xe máy, gần chợ<div class="zmt" style="text-align:right">10:05</div></div>
+              <div class="zm zm-ai">
+                ✨ Hiểu rồi! Mình tìm phòng cho bạn:<br><br>
+                🏠 <b>Phòng 201</b> — 2.500.000đ<br>
+                📍 Cách chợ Q.3 chỉ 300m<br>
+                🛵 Bãi xe máy miễn phí · 22m²<br>
+                ✅ Còn trống
+                <div class="zmbtns">
+                  <span class="zmbtn">📸 Xem ảnh</span>
+                  <span class="zmbtn">📅 Đặt lịch xem</span>
+                </div>
+                <div class="zmt">10:05</div>
               </div>
-              <div class="zmt">09:00</div>
-            </div>
-            <div class="zm zmu">có phòng nào dưới 3tr ko<div class="zmt" style="text-align:right">09:01</div></div>
-            <div class="zm zmb">
-              🔍 Tìm thấy 2 phòng dưới 3tr:<br>
-              🏠 <b>Phòng 101</b> — 2.500.000đ<br>
-              📍 Q.3, HCM · 20m² · ✅ Còn trống<br>
-              🏠 <b>Phòng 102</b> — 2.800.000đ<br>
-              📍 Q.3, HCM · 25m² · ✅ Còn trống
-              <div class="zmt">09:01</div>
-            </div>
-            <div class="zm zmu">cho xem ảnh phòng 101 với<div class="zmt" style="text-align:right">09:02</div></div>
-            <div class="zm zmb">
-              📸 Ảnh Phòng 101:<br>
-              🛏 Nội thất đầy đủ · WC riêng<br>
-              📞 Liên hệ: <b>0901 234 567</b>
-              <div class="zmbtns">
-                <span class="zmbtn">📅 Đặt lịch xem</span>
-                <span class="zmbtn">◀ Quay lại</span>
+              <div class="zm zmu">phòng có wifi ko bạn<div class="zmt" style="text-align:right">10:06</div></div>
+              <div class="zm zm-ai">
+                Dạ có! Phòng 201 bao gồm:<br>
+                📶 WiFi tốc độ cao miễn phí<br>
+                💡 Điện nước sinh hoạt<br>
+                🔒 Khóa cửa thẻ từ
+                <div class="zmt">10:06</div>
               </div>
-              <div class="zmt">09:02</div>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- TÌNH HUỐNG 2: Trả lời 2h sáng -->
+    <div class="scenario-card">
+      <div class="scenario-header">
+        <div class="scenario-badge sb-2">🌙 Hoạt động 24/7</div>
+        <div class="scenario-title">2h sáng khách hỏi — vẫn trả lời ngay</div>
+        <div class="scenario-sub">Chủ trọ ngủ ngon, khách vẫn được hỗ trợ tức thì</div>
+      </div>
+      <div class="phone-wrap">
+        <div class="iphone">
+          <div class="iphone-screen">
+            <div class="dynamic-island"></div>
+            <div class="z-bar">
+              <div class="z-row">
+                <div class="z-av"><div class="z-logo">Z</div></div>
+                <div>
+                  <div class="z-name">🏠 Nhà trọ quận 3</div>
+                  <div class="z-sub">🟢 Đang hoạt động</div>
+                </div>
+              </div>
+            </div>
+            <div class="z-body">
+              <div class="zm zmu">mai mình muốn xem phòng được không ạ<div class="zmt" style="text-align:right">02:14</div></div>
+              <div class="zm zm-ai">
+                Dạ được bạn ơi! 🌙<br>
+                Lịch xem phòng ngày mai:<br><br>
+                🕗 Sáng: 8:00 – 11:30<br>
+                🕑 Chiều: 14:00 – 17:30<br><br>
+                Bạn chọn khung giờ nào?
+                <div class="zmbtns">
+                  <span class="zmbtn">8:00</span>
+                  <span class="zmbtn">9:30</span>
+                  <span class="zmbtn">14:00</span>
+                  <span class="zmbtn">15:30</span>
+                </div>
+                <div class="zmt">02:14</div>
+              </div>
+              <div class="zm zmu">9:30 sáng nha<div class="zmt" style="text-align:right">02:15</div></div>
+              <div class="zm zm-ai">
+                ✅ Đặt lịch thành công!<br>
+                📅 Ngày mai · 9:30 sáng<br>
+                📍 123 Lý Tự Trọng, Q.3<br>
+                🔔 Mình sẽ nhắc bạn lúc 9:00
+                <div class="zmt">02:15</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TÌNH HUỐNG 3: Xử lý thương lượng giá khéo -->
+    <div class="scenario-card">
+      <div class="scenario-header">
+        <div class="scenario-badge sb-3">💬 Thương lượng thông minh</div>
+        <div class="scenario-title">Giữ giá khéo, không mất khách</div>
+        <div class="scenario-sub">AI trả lời thuyết phục, giới thiệu thêm giá trị phòng</div>
+      </div>
+      <div class="phone-wrap">
+        <div class="iphone">
+          <div class="iphone-screen">
+            <div class="dynamic-island"></div>
+            <div class="z-bar">
+              <div class="z-row">
+                <div class="z-av"><div class="z-logo">Z</div></div>
+                <div>
+                  <div class="z-name">🏠 Nhà trọ quận 3</div>
+                  <div class="z-sub">🟢 Đang hoạt động</div>
+                </div>
+              </div>
+            </div>
+            <div class="z-body">
+              <div class="zm zmu">2.5tr hơi cao, bớt 2.2tr được không bạn<div class="zmt" style="text-align:right">14:22</div></div>
+              <div class="zm zm-ai">
+                Mình hiểu bạn đang cân nhắc 💚<br>
+                Phòng 201 giá 2.5tr <b>đã bao gồm</b>:<br>
+                ✅ WiFi · Điện nước SH<br>
+                ✅ Bãi xe miễn phí<br>
+                ✅ Bảo vệ 24/7<br><br>
+                Nếu bạn muốn tầm 2.2tr, mình có <b>Phòng 301</b> — 18m², cùng tiện ích!
+                <div class="zmbtns">
+                  <span class="zmbtn">Xem Phòng 301</span>
+                  <span class="zmbtn">Giữ Phòng 201</span>
+                </div>
+                <div class="zmt">14:22</div>
+              </div>
+              <div class="zm zmu">thôi được, đặt lịch xem phòng 201 nha<div class="zmt" style="text-align:right">14:23</div></div>
+              <div class="zm zm-ai">
+                Tuyệt! 🎉 Đặt lịch xem Phòng 201<br>
+                Bạn muốn xem lúc nào ạ?
+                <div class="zmt">14:23</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </section>
 
