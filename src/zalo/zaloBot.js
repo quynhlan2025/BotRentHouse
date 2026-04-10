@@ -2,6 +2,7 @@ const axios = require('axios');
 const Room = require('../models/Room');
 const ZaloConversation = require('../models/ZaloConversation');
 const MaintenanceRequest = require('../models/MaintenanceRequest');
+const RoomBill = require('../models/RoomBill');
 const { askClaude } = require('../handlers/claudeHandler');
 
 const BOT_TOKEN = process.env.ZALO_OA_TOKEN;
@@ -97,6 +98,7 @@ async function sendWithMenu(userId, text, profile) {
     '3️⃣ Liên hệ chủ nhà\n' +
     '4️⃣ Giới thiệu dịch vụ\n' +
     '5️⃣ Báo sự cố / sửa chữa\n' +
+    '6️⃣ Xem hóa đơn tiền phòng\n' +
     '━━━━━━━━━━━━━━━\n' +
     '👉 Nhắn số để chọn',
     profile
@@ -131,6 +133,8 @@ async function sendRoomCard(userId, room, profile) {
 const userState = {};
 // Trạng thái maintenance
 const maintenanceState = {};
+// Trạng thái xem hóa đơn
+const billState = {};
 
 // Xử lý tin nhắn
 async function handleZaloMessage(event) {
@@ -305,6 +309,58 @@ async function handleZaloMessage(event) {
       'Vui lòng chọn:\n' +
       '1️⃣ 📞 Liên hệ chủ nhà ngay\n' +
       '2️⃣ ⏳ Để chủ nhà xử lý sau',
+      profile
+    );
+  }
+
+  // ── XEM HÓA ĐƠN ─────────────────────────────────────────────────────────────
+  if (action === '6' || /xem hóa đơn|tiền phòng|hóa đơn|bill/i.test(action)) {
+    billState[userId] = { step: 'waiting_room' };
+    return sendText(userId,
+      '💰 Xem hóa đơn tiền phòng\n\nBạn ở phòng số mấy?\n(Nhắn số phòng, ví dụ: 101)',
+      profile
+    );
+  }
+
+  if (billState[userId]?.step === 'waiting_room') {
+    delete billState[userId];
+    const roomNumber = text.trim();
+    const now   = new Date();
+    const month = now.getMonth() + 1;
+    const year  = now.getFullYear();
+
+    const bill = await RoomBill.findOne({ roomNumber, month, year });
+
+    if (!bill) {
+      return sendText(userId,
+        `📋 Phòng ${roomNumber} — Tháng ${month}/${year}\n\n` +
+        'Chưa có hóa đơn tháng này.\n' +
+        `📞 Liên hệ chủ nhà: ${LANDLORD_PHONE}`,
+        profile
+      );
+    }
+
+    const fmt  = n => (+n || 0).toLocaleString('vi-VN');
+    const eUsed = Math.max(0, bill.electricEnd - bill.electricStart);
+    const wUsed = Math.max(0, bill.waterEnd    - bill.waterStart);
+    const statusText = bill.status === 'paid' ? '✅ Đã thanh toán' : '⏳ Chưa thanh toán';
+
+    return sendText(userId,
+      `💰 HÓA ĐƠN THÁNG ${month}/${year}\n` +
+      `🏠 Phòng ${bill.roomNumber}` + (bill.tenantName ? ` — ${bill.tenantName}` : '') + '\n' +
+      '━━━━━━━━━━━━━━━━━━\n' +
+      `🏠 Tiền phòng:     ${fmt(bill.rentAmount)}đ\n` +
+      `⚡ Điện ${eUsed} kWh:  ${fmt(eUsed * (bill.electricPrice || 3500))}đ\n` +
+      `💧 Nước ${wUsed} m³:   ${fmt(wUsed * (bill.waterPrice || 15000))}đ\n` +
+      (bill.internetFee ? `📶 Internet:       ${fmt(bill.internetFee)}đ\n` : '') +
+      (bill.parkingFee  ? `🛵 Gửi xe:         ${fmt(bill.parkingFee)}đ\n`  : '') +
+      (bill.otherFee    ? `📌 ${bill.otherFeeNote || 'Khác'}:  ${fmt(bill.otherFee)}đ\n` : '') +
+      '━━━━━━━━━━━━━━━━━━\n' +
+      `💵 TỔNG: ${fmt(bill.totalAmount)}đ\n` +
+      `📌 ${statusText}\n\n` +
+      (bill.status === 'unpaid'
+        ? `⏰ Vui lòng thanh toán trước ngày 5/${month + 1 > 12 ? 1 : month + 1}/${year}\n📞 Liên hệ: ${LANDLORD_PHONE}`
+        : '🎉 Cảm ơn bạn đã thanh toán!'),
       profile
     );
   }

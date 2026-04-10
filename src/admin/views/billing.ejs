@@ -117,6 +117,10 @@
 
   <% if (msg) { %><div class="flash">✅ <%= msg %></div><% } %>
 
+  <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#1e40af">
+    💡 Khách thuê tự xem hóa đơn bằng cách nhắn <b>"6"</b> hoặc <b>"xem hóa đơn"</b> vào Zalo OA — không cần gửi thủ công.
+  </div>
+
   <!-- CHỌN THÁNG -->
   <form class="month-bar" method="GET" action="/admin/billing">
     <label>Tháng:</label>
@@ -171,7 +175,7 @@
         <!-- THÔNG TIN KHÁCH -->
         <div class="form-section">
           <div class="form-section-title">👤 Khách thuê</div>
-          <div class="form-row three">
+          <div class="form-row">
             <div class="f-group">
               <label>Tên khách</label>
               <input type="text" name="tenantName" value="<%= bill?.tenantName || '' %>" placeholder="Nguyễn Văn A">
@@ -179,10 +183,6 @@
             <div class="f-group">
               <label>SĐT</label>
               <input type="text" name="tenantPhone" value="<%= bill?.tenantPhone || '' %>" placeholder="0901234567">
-            </div>
-            <div class="f-group">
-              <label>Zalo ID (để gửi bill)</label>
-              <input type="text" name="tenantZaloId" value="<%= bill?.tenantZaloId || '' %>" placeholder="Zalo user ID">
             </div>
           </div>
         </div>
@@ -281,10 +281,6 @@
         <div class="btn-row">
           <button type="submit" class="btn btn-save">💾 Lưu</button>
           <% if (bill) { %>
-            <% if (bill.tenantZaloId) { %>
-              <button type="button" class="btn btn-send"
-                onclick="sendBill('<%= bill._id %>')">📤 Gửi Zalo</button>
-            <% } %>
             <% if (bill.status === 'unpaid') { %>
               <button type="button" class="btn btn-paid"
                 onclick="markPaid('<%= bill._id %>')">✅ Đã thu tiền</button>
