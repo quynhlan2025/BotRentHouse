@@ -89,25 +89,36 @@
 
     /* ── PRICING ── */
     .pricing { padding: 70px 20px; background: #f9f9f9; }
-    .pricing-grid { max-width: 700px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-    .price-card { background: white; border-radius: 12px; padding: 28px; border: 2px solid #eee; }
-    .price-card.featured { border-color: #2c7a4b; position: relative; }
-    .price-card.featured::before {
-      content: '⭐ Phổ biến'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
-      background: #2c7a4b; color: white; padding: 4px 14px; border-radius: 12px; font-size: 12px; font-weight: 600; white-space: nowrap;
-    }
-    .price-name { font-size: 16px; font-weight: 700; color: #666; margin-bottom: 8px; }
-    .price-amount { font-size: 36px; font-weight: 800; color: #1a1a1a; }
-    .price-amount span { font-size: 16px; color: #666; font-weight: 400; }
-    .price-desc { color: #888; font-size: 13px; margin: 8px 0 20px; }
-    .price-features { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
-    .price-features li { font-size: 14px; color: #555; display: flex; align-items: center; gap: 8px; }
-    .price-features li::before { content: '✓'; color: #2c7a4b; font-weight: 700; }
-    .btn-price { display: block; text-align: center; padding: 12px; border-radius: 8px; font-weight: 600; font-size: 15px; text-decoration: none; }
+    .pricing-grid { max-width: 1060px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; align-items: start; }
+    .price-card { background: white; border-radius: 16px; padding: 0; border: 2px solid #eee; overflow: hidden; transition: transform .2s, box-shadow .2s; }
+    .price-card:hover { transform: translateY(-5px); box-shadow: 0 16px 40px rgba(0,0,0,.1); }
+    .price-card.featured { border-color: #2c7a4b; box-shadow: 0 8px 32px rgba(44,122,75,.18); }
+    .price-card.featured:hover { transform: scale(1.02) translateY(-5px); }
+    .price-card.elite { border-color: #5b21b6; }
+    .price-top { padding: 26px 24px 20px; }
+    .price-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; margin-bottom: 12px; }
+    .badge-basic    { background: #f1f5f9; color: #475569; }
+    .badge-featured { background: #d1fae5; color: #065f46; }
+    .badge-elite    { background: #ede9fe; color: #5b21b6; }
+    .price-name { font-size: 20px; font-weight: 800; color: #1a1a1a; margin-bottom: 6px; }
+    .price-name.ai-name   { color: #2c7a4b; }
+    .price-name.pro-name  { color: #5b21b6; }
+    .price-amount { font-size: 38px; font-weight: 900; color: #1a1a1a; line-height: 1; }
+    .price-amount span { font-size: 14px; color: #888; font-weight: 400; }
+    .price-desc { color: #888; font-size: 13px; margin: 6px 0 0; }
+    .price-divider { height: 1px; background: #eee; margin: 0 24px; }
+    .price-features { list-style: none; display: flex; flex-direction: column; gap: 9px; padding: 20px 24px 24px; }
+    .price-features li { font-size: 14px; color: #555; display: flex; align-items: flex-start; gap: 8px; line-height: 1.45; }
+    .price-features li::before { content: '✓'; color: #2c7a4b; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+    .price-features li.purple::before { content: '✦'; color: #7c3aed; }
+    .price-cta { padding: 0 24px 26px; }
+    .btn-price { display: block; text-align: center; padding: 13px; border-radius: 10px; font-weight: 700; font-size: 14px; text-decoration: none; }
     .btn-green { background: #2c7a4b; color: white; }
     .btn-green:hover { background: #235e3a; }
     .btn-gray { background: #f0f0f0; color: #333; }
     .btn-gray:hover { background: #e0e0e0; }
+    .btn-purple { background: #1e1b4b; color: white; }
+    .btn-purple:hover { background: #312e81; }
 
     /* ── CTA ── */
     .cta { background: linear-gradient(135deg, #1a5c35, #2c7a4b); color: white; padding: 70px 20px; text-align: center; }
@@ -120,11 +131,13 @@
     footer a { color: #86efac; text-decoration: none; }
 
     /* ── RESPONSIVE ── */
+    @media (max-width: 960px) {
+      .pricing-grid { grid-template-columns: 1fr; max-width: 420px; }
+    }
     @media (max-width: 768px) {
       .stats-grid { grid-template-columns: repeat(3, 1fr); gap: 12px; }
       .stat-num { font-size: 26px; }
       .demo-container { grid-template-columns: 1fr; }
-      .pricing-grid { grid-template-columns: 1fr; }
       .hero-btns { flex-direction: column; align-items: center; }
       .btn-hero { width: 100%; max-width: 280px; text-align: center; }
     }
@@ -152,11 +165,11 @@
     </div>
     <div>
       <div class="stat-num">0đ</div>
-      <div class="stat-label">Chi phí dùng thử</div>
+      <div class="stat-label">Miễn phí hoàn toàn</div>
     </div>
     <div>
-      <div class="stat-num">2</div>
-      <div class="stat-label">Nền tảng hỗ trợ</div>
+      <div class="stat-num">3</div>
+      <div class="stat-label">Loại trợ lý ảo</div>
     </div>
   </div>
 </section>
@@ -290,41 +303,83 @@
 <!-- PRICING -->
 <section class="pricing">
   <div class="section-title">
-    <h2>Chi phí sử dụng</h2>
-    <p>Minh bạch, không phát sinh</p>
+    <h2>Miễn phí hoàn toàn 🎉</h2>
+    <p>3 loại trợ lý ảo — tất cả đều 0đ, chọn gói phù hợp với nhu cầu của bạn</p>
   </div>
   <div class="pricing-grid">
+
+    <!-- GÓI 1: TRỢ LÝ ẢO -->
     <div class="price-card">
-      <div class="price-name">Dùng thử</div>
-      <div class="price-amount">0đ <span>/tháng</span></div>
-      <div class="price-desc">Trong 30 ngày đầu</div>
+      <div class="price-top">
+        <div class="price-badge badge-basic">🤖 Cơ bản</div>
+        <div class="price-name">Trợ lý ảo</div>
+        <div class="price-amount">0đ <span>/tháng</span></div>
+        <div class="price-desc">Miễn phí hoàn toàn · Bot nút bấm thông minh</div>
+      </div>
+      <div class="price-divider"></div>
       <ul class="price-features">
-        <li>Bot Telegram + Zalo</li>
-        <li>Quản lý tối đa 10 phòng</li>
-        <li>Upload ảnh phòng</li>
-        <li>Tìm kiếm theo giá</li>
+        <li>Bot Telegram + Zalo 24/7</li>
+        <li>Đặt lịch xem phòng qua menu nút bấm</li>
+        <li>Hiển thị danh sách phòng trống</li>
+        <li>Gửi ảnh phòng tự động</li>
+        <li>Tìm phòng theo ngân sách</li>
+        <li>Trang admin quản lý phòng</li>
       </ul>
-      <a href="/admin" class="btn-price btn-gray">Bắt đầu ngay</a>
+      <div class="price-cta">
+        <a href="/admin" class="btn-price btn-gray">Bắt đầu miễn phí →</a>
+      </div>
     </div>
+
+    <!-- GÓI 2: TRỢ LÝ ẢO AI -->
     <div class="price-card featured">
-      <div class="price-name">Tiêu chuẩn</div>
-      <div class="price-amount">200k <span>/tháng</span></div>
-      <div class="price-desc">Sau thời gian dùng thử</div>
+      <div class="price-top">
+        <div class="price-badge badge-featured">✨ Phổ biến nhất</div>
+        <div class="price-name ai-name">Trợ lý ảo AI</div>
+        <div class="price-amount">0đ <span>/tháng</span></div>
+        <div class="price-desc">Miễn phí · AI hiểu ngôn ngữ tự nhiên</div>
+      </div>
+      <div class="price-divider"></div>
       <ul class="price-features">
-        <li>Tất cả tính năng miễn phí</li>
-        <li>Không giới hạn phòng</li>
-        <li>AI tư vấn thông minh</li>
-        <li>Hỗ trợ kỹ thuật</li>
-        <li>Cập nhật tính năng mới</li>
+        <li>Tất cả tính năng Trợ lý ảo</li>
+        <li class="purple">AI hiểu tin nhắn tự do, không cần bấm menu</li>
+        <li class="purple">Tư vấn thông minh theo nhu cầu khách</li>
+        <li class="purple">Nhớ sở thích & lịch sử khách hỏi</li>
+        <li>Phản hồi tức thì dưới 1 giây</li>
+        <li>Hỗ trợ setup tận nơi</li>
       </ul>
-      <a href="tel:0901234567" class="btn-price btn-green">Liên hệ tư vấn</a>
+      <div class="price-cta">
+        <a href="/admin" class="btn-price btn-green">Đăng ký ngay →</a>
+      </div>
     </div>
+
+    <!-- GÓI 3: TRỢ LÝ ẢO AI PRO -->
+    <div class="price-card elite">
+      <div class="price-top">
+        <div class="price-badge badge-elite">🚀 Xịn nhất</div>
+        <div class="price-name pro-name">Trợ lý ảo AI Pro</div>
+        <div class="price-amount">0đ <span>/tháng</span></div>
+        <div class="price-desc">Miễn phí · AI nâng cao & phân tích toàn diện</div>
+      </div>
+      <div class="price-divider"></div>
+      <ul class="price-features">
+        <li>Tất cả tính năng Trợ lý ảo AI</li>
+        <li class="purple">Phân tích hành vi khách tìm phòng</li>
+        <li class="purple">Remarketing tự động — nhắc khách quay lại</li>
+        <li class="purple">Báo cáo phòng trống & doanh thu realtime</li>
+        <li class="purple">Tích hợp nhiều dãy trọ, nhiều địa chỉ</li>
+        <li class="purple">Dashboard quản lý toàn diện</li>
+      </ul>
+      <div class="price-cta">
+        <a href="tel:0901234567" class="btn-price btn-purple">Tôi muốn gói này →</a>
+      </div>
+    </div>
+
   </div>
 </section>
 
 <!-- CTA -->
 <section class="cta">
-  <h2>Bắt đầu miễn phí ngay hôm nay!</h2>
+  <h2>3 gói trợ lý ảo — tất cả miễn phí!</h2>
   <p>Không cần kỹ thuật, không cần thẻ tín dụng. Setup trong 5 phút.</p>
   <div class="cta-btns">
     <a href="/admin" class="btn-hero btn-white">🏠 Vào trang quản lý</a>
