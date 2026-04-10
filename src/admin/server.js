@@ -6,6 +6,7 @@ const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const Room = require('../models/Room');
 const Booking = require('../models/Booking');
 const ZaloConversation = require('../models/ZaloConversation');
+const MaintenanceRequest = require('../models/MaintenanceRequest');
 const { handleZaloMessage } = require('../zalo/zaloBot');
 
 const app = express();
@@ -229,6 +230,31 @@ app.post('/admin/rooms/:id/toggle', async (req, res) => {
 app.post('/admin/rooms/:id/delete', async (req, res) => {
   await Room.findByIdAndDelete(req.params.id);
   res.redirect('/admin?msg=Đã xóa phòng!&type=success');
+});
+
+// ── MAINTENANCE ───────────────────────────────────────────────────────────────
+app.get('/admin/maintenance', async (req, res) => {
+  const filter = {};
+  if (req.query.status) filter.status = req.query.status;
+  const requests = await MaintenanceRequest.find(filter).sort({ createdAt: -1 });
+  const counts = {
+    all:        await MaintenanceRequest.countDocuments(),
+    pending:    await MaintenanceRequest.countDocuments({ status: 'pending' }),
+    processing: await MaintenanceRequest.countDocuments({ status: 'processing' }),
+    done:       await MaintenanceRequest.countDocuments({ status: 'done' }),
+  };
+  res.render('maintenance', { requests, counts, filter: req.query.status || 'all', msg: req.query.msg || '' });
+});
+
+app.post('/admin/maintenance/:id/status', async (req, res) => {
+  const { status, note } = req.body;
+  await MaintenanceRequest.findByIdAndUpdate(req.params.id, { status, note, updatedAt: new Date() });
+  res.redirect('/admin/maintenance?msg=Đã cập nhật!');
+});
+
+app.post('/admin/maintenance/:id/delete', async (req, res) => {
+  await MaintenanceRequest.findByIdAndDelete(req.params.id);
+  res.redirect('/admin/maintenance?msg=Đã xóa!');
 });
 
 module.exports = app;

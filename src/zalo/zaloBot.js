@@ -1,6 +1,7 @@
 const axios = require('axios');
 const Room = require('../models/Room');
 const ZaloConversation = require('../models/ZaloConversation');
+const MaintenanceRequest = require('../models/MaintenanceRequest');
 const { askClaude } = require('../handlers/claudeHandler');
 
 const BOT_TOKEN = process.env.ZALO_OA_TOKEN;
@@ -73,6 +74,7 @@ async function sendWithMenu(userId, text, profile) {
     '2️⃣ Tìm phòng theo giá\n' +
     '3️⃣ Liên hệ chủ nhà\n' +
     '4️⃣ Giới thiệu dịch vụ\n' +
+    '5️⃣ Báo sự cố / sửa chữa\n' +
     '━━━━━━━━━━━━━━━\n' +
     '👉 Nhắn số để chọn',
     profile
@@ -105,6 +107,8 @@ async function sendRoomCard(userId, room, profile) {
 
 // Lưu trạng thái user
 const userState = {};
+// Trạng thái maintenance
+const maintenanceState = {};
 
 // Xử lý tin nhắn
 async function handleZaloMessage(event) {
@@ -156,6 +160,36 @@ async function handleZaloMessage(event) {
     const available = await Room.countDocuments({ status: 'available' });
     return sendWithMenu(userId,
       `🏠 Giới thiệu\n\nChúng tôi cho thuê phòng trọ tại TP.HCM.\n\n📊 Tổng phòng: ${total}\n✅ Còn trống: ${available}\n\nLiên hệ ngay để được tư vấn!`,
+      profile
+    );
+  }
+
+  if (action === 'menu_suachua' || action === '5' || /báo sự cố|sửa chữa|hỏng|bị hỏng|bị hư/i.test(action)) {
+    maintenanceState[userId] = { step: 'waiting_room' };
+    return sendText(userId, '🔧 Báo sự cố / Yêu cầu sửa chữa\n\nBạn đang ở phòng số mấy?\n(Nhắn số phòng, ví dụ: 101)', profile);
+  }
+
+  if (maintenanceState[userId]?.step === 'waiting_room') {
+    maintenanceState[userId] = { step: 'waiting_desc', roomNumber: text };
+    return sendText(userId, `📝 Phòng ${text}\n\nMô tả sự cố cần sửa chữa:\n(Ví dụ: đèn phòng bị hỏng, vòi nước bị chảy, cửa bị kẹt...)`);
+  }
+
+  if (maintenanceState[userId]?.step === 'waiting_desc') {
+    const { roomNumber } = maintenanceState[userId];
+    delete maintenanceState[userId];
+    await MaintenanceRequest.create({
+      zaloUserId:  userId,
+      displayName: profile.displayName || 'Khách hàng',
+      phone:       profile.phone || '',
+      roomNumber,
+      description: text,
+    });
+    return sendText(userId,
+      '✅ Đã ghi nhận yêu cầu sửa chữa!\n\n' +
+      `🏠 Phòng: ${roomNumber}\n` +
+      `📋 Sự cố: ${text}\n\n` +
+      '⏳ Chủ nhà sẽ liên hệ bạn sớm nhất có thể.\n' +
+      'Cảm ơn bạn đã phản hồi! 🙏',
       profile
     );
   }
