@@ -165,31 +165,73 @@ async function handleZaloMessage(event) {
   }
 
   if (action === 'menu_suachua' || action === '5' || /báo sự cố|sửa chữa|hỏng|bị hỏng|bị hư/i.test(action)) {
-    maintenanceState[userId] = { step: 'waiting_room' };
-    return sendText(userId, '🔧 Báo sự cố / Yêu cầu sửa chữa\n\nBạn đang ở phòng số mấy?\n(Nhắn số phòng, ví dụ: 101)', profile);
+    maintenanceState[userId] = { step: 'waiting_form' };
+    return sendText(userId,
+      '🔧 Báo sự cố / Yêu cầu sửa chữa\n\n' +
+      'Vui lòng copy mẫu bên dưới, điền thông tin và gửi lại:\n\n' +
+      '━━━━━━━━━━━━━━━\n' +
+      'Phòng: [số phòng]\n' +
+      'Sự cố: [mô tả vấn đề]\n' +
+      'Mức độ: [khẩn / bình thường]\n' +
+      '━━━━━━━━━━━━━━━\n\n' +
+      'Ví dụ:\n' +
+      'Phòng: 101\n' +
+      'Sự cố: Đèn phòng ngủ bị hỏng\n' +
+      'Mức độ: bình thường',
+      profile
+    );
   }
 
-  if (maintenanceState[userId]?.step === 'waiting_room') {
-    maintenanceState[userId] = { step: 'waiting_desc', roomNumber: text };
-    return sendText(userId, `📝 Phòng ${text}\n\nMô tả sự cố cần sửa chữa:\n(Ví dụ: đèn phòng bị hỏng, vòi nước bị chảy, cửa bị kẹt...)`);
-  }
+  if (maintenanceState[userId]?.step === 'waiting_form') {
+    // Parse template: tìm "Phòng: xxx" và "Sự cố: xxx"
+    const roomMatch = text.match(/ph[oò]ng\s*[:\-]\s*(.+)/i);
+    const descMatch = text.match(/s[ựu]\s*c[oố]\s*[:\-]\s*(.+)/i);
+    const levelMatch = text.match(/m[uứ]c\s*[đd][oộ]\s*[:\-]\s*(.+)/i);
 
-  if (maintenanceState[userId]?.step === 'waiting_desc') {
-    const { roomNumber } = maintenanceState[userId];
+    if (!roomMatch || !descMatch) {
+      return sendText(userId,
+        '⚠️ Chưa đúng mẫu. Vui lòng điền đầy đủ:\n\n' +
+        'Phòng: [số phòng]\n' +
+        'Sự cố: [mô tả vấn đề]\n' +
+        'Mức độ: [khẩn / bình thường]',
+        profile
+      );
+    }
+
     delete maintenanceState[userId];
+    const roomNumber  = roomMatch[1].trim();
+    const description = descMatch[1].trim();
+    const level       = levelMatch ? levelMatch[1].trim() : 'bình thường';
+    const isUrgent    = /khẩn|gấp|nguy hiểm|cháy|điện giật/i.test(level + description);
+
     await MaintenanceRequest.create({
       zaloUserId:  userId,
       displayName: profile.displayName || 'Khách hàng',
       phone:       profile.phone || '',
       roomNumber,
-      description: text,
+      description: `${description} (Mức độ: ${level})`,
     });
+
+    if (isUrgent) {
+      return sendText(userId,
+        '🚨 Đã ghi nhận SỰ CỐ KHẨN!\n\n' +
+        `🏠 Phòng: ${roomNumber}\n` +
+        `📋 Sự cố: ${description}\n\n` +
+        '📞 Liên hệ chủ nhà NGAY:\n' +
+        '👤 Nguyễn Văn A — 0901 234 567\n' +
+        '🕐 Trực 7:00 – 22:00',
+        profile
+      );
+    }
+
     return sendText(userId,
-      '✅ Đã ghi nhận yêu cầu sửa chữa!\n\n' +
+      '✅ Đã ghi nhận yêu cầu!\n\n' +
       `🏠 Phòng: ${roomNumber}\n` +
-      `📋 Sự cố: ${text}\n\n` +
-      '⏳ Chủ nhà sẽ liên hệ bạn sớm nhất có thể.\n' +
-      'Cảm ơn bạn đã phản hồi! 🙏',
+      `📋 Sự cố: ${description}\n` +
+      `⚡ Mức độ: ${level}\n\n` +
+      '⏳ Chủ nhà sẽ liên hệ bạn sớm.\n\n' +
+      'Cần liên hệ ngay?\n' +
+      '📞 0901 234 567 (7:00 – 22:00)',
       profile
     );
   }
